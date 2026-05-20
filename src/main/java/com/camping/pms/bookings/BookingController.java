@@ -4,7 +4,9 @@ import com.camping.pms.accommodations.Accommodation;
 import com.camping.pms.accommodations.AccommodationRepository;
 import com.camping.pms.customers.Customer;
 import com.camping.pms.customers.CustomerRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
@@ -32,14 +34,24 @@ public class BookingController {
         return bookingRepository.findAll();
     }
 
+    @GetMapping("/{id}")
+    public Booking findById(@PathVariable UUID id) {
+        return bookingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation non trouvée"));
+    }
+
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Booking create(@RequestBody CreateBookingRequest request) {
         Accommodation acc = accommodationRepository.findById(request.accommodationId())
-                .orElseThrow();
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hébergement non trouvé"));
         Customer customer = customerRepository.findById(request.customerId())
-                .orElseThrow();
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client non trouvé"));
 
         long nights = ChronoUnit.DAYS.between(request.startDate(), request.endDate());
+        if (nights <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Les dates sont invalides");
+        }
         BigDecimal total = acc.getBasePrice().multiply(BigDecimal.valueOf(nights));
 
         Booking booking = new Booking();
@@ -53,5 +65,22 @@ public class BookingController {
         booking.setStatus("PENDING");
 
         return bookingRepository.save(booking);
+    }
+
+    @PatchMapping("/{id}/status")
+    public Booking updateStatus(@PathVariable UUID id, @RequestParam String status) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation non trouvée"));
+        booking.setStatus(status);
+        return bookingRepository.save(booking);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        if (!bookingRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation non trouvée");
+        }
+        bookingRepository.deleteById(id);
     }
 }
