@@ -3,12 +3,14 @@ package com.camping.pms.bookings;
 import com.camping.pms.accommodations.Accommodation;
 import com.camping.pms.customers.Customer;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "bookings")
 public class Booking {
@@ -27,13 +29,8 @@ public class Booking {
 
     private LocalDate startDate;
     private LocalDate endDate;
-
     private Integer adults;
     private Integer children;
-
     private BigDecimal totalPrice;
-
-    private String status; // PENDING, CONFIRMED, CANCELLED...
-
-    // getters / setters
+    private String status;
 }

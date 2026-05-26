@@ -3,6 +3,7 @@ package com.camping.pms.config;
 import com.camping.pms.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -42,6 +43,10 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/accommodations/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/api/accommodations/**").hasRole("ADMIN")
+                .requestMatchers("/api/bookings/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/api/customers/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .httpBasic(basic -> basic.disable())

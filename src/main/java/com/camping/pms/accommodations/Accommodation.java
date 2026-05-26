@@ -1,11 +1,13 @@
 package com.camping.pms.accommodations;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.UUID;
-import lombok.Data;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "accommodations")
 public class Accommodation {
@@ -14,13 +16,9 @@ public class Accommodation {
     @GeneratedValue
     private UUID id;
 
-    private String name;      // ex : Emplacement 12
-    private String type;      // ex : TENTE, MOBIL_HOME
-    private Integer capacity; // nb de personnes
-
-    private BigDecimal basePrice; // prix par nuit
-
+    private String name;
+    private String type;
+    private Integer capacity;
+    private BigDecimal basePrice;
     private String description;
-
-    // getters / setters
 }
