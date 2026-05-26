@@ -1,5 +1,6 @@
 package com.camping.pms.customers;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,7 +28,11 @@ public class Customer implements UserDetails {
     private String lastName;
     private String email;
     private String phone;
+
+    @JsonIgnore
     private String password;
+
+    @JsonIgnore
     private String refreshToken;
 
     @Enumerated(EnumType.STRING)
@@ -39,24 +44,30 @@ public class Customer implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public String getUsername() {
         return email;
     }
 
     @Override
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() { return true; }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() { return true; }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() { return true; }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() { return true; }
 }
