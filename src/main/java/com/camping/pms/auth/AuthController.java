@@ -11,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/auth")
@@ -88,5 +89,13 @@ public class AuthController {
         customer.setRefreshToken(newRefreshToken);
         customerRepository.save(customer);
         return new AuthResponse(newAccessToken, newRefreshToken);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        Customer customer = currentUserService.getCurrentUser();
+        customer.setRefreshToken(null);
+        customerRepository.save(customer);
+        return ResponseEntity.noContent().build();
     }
 }
