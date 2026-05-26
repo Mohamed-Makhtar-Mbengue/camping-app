@@ -1,5 +1,9 @@
 package com.camping.pms.accommodations;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,8 +22,13 @@ public class AccommodationController {
     }
 
     @GetMapping
-    public List<Accommodation> findAll() {
-        return repository.findAll();
+    public Page<Accommodation> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name") String sortBy
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return repository.findAll(pageable);
     }
 
     @GetMapping("/{id}")

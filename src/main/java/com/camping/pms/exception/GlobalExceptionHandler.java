@@ -29,7 +29,8 @@ public class GlobalExceptionHandler {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        body.put("error", "Erreur interne du serveur");
+        body.put("error", ex.getMessage()); // temporaire pour debug
+        ex.printStackTrace(); // affiche dans les logs
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 

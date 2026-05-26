@@ -38,6 +38,12 @@ public class BookingController {
         return bookingRepository.findAll();
     }
 
+    @GetMapping("/my")
+    public List<Booking> findMine() {
+        Customer currentUser = currentUserService.getCurrentUser();
+        return bookingRepository.findByCustomer(currentUser);
+    }
+
     @GetMapping("/{id}")
     public Booking findById(@PathVariable UUID id) {
         return bookingRepository.findById(id)
@@ -56,6 +62,16 @@ public class BookingController {
         if (nights <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Les dates sont invalides");
         }
+
+        boolean conflict = bookingRepository.existsConflict(
+                request.accommodationId(),
+                request.startDate(),
+                request.endDate()
+        );
+        if (conflict) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Hébergement non disponible pour ces dates");
+        }
+
         BigDecimal total = acc.getBasePrice().multiply(BigDecimal.valueOf(nights));
 
         Booking booking = new Booking();
