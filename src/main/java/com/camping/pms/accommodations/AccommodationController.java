@@ -1,5 +1,6 @@
 package com.camping.pms.accommodations;
 
+import com.camping.pms.accommodations.dto.AccommodationDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,29 +22,29 @@ public class AccommodationController {
     }
 
     @GetMapping
-    public Page<Accommodation> findAll(
+    public Page<AccommodationDto> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "name") String sortBy
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        return repository.findAll(pageable);
+        return repository.findAll(pageable).map(AccommodationDto::from);
     }
 
     @GetMapping("/{id}")
-    public Accommodation findById(@PathVariable UUID id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hébergement non trouvé"));
+    public AccommodationDto findById(@PathVariable UUID id) {
+        return AccommodationDto.from(repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hébergement non trouvé")));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Accommodation create(@RequestBody Accommodation accommodation) {
-        return repository.save(accommodation);
+    public AccommodationDto create(@RequestBody Accommodation accommodation) {
+        return AccommodationDto.from(repository.save(accommodation));
     }
 
     @PutMapping("/{id}")
-    public Accommodation update(@PathVariable UUID id, @RequestBody Accommodation updated) {
+    public AccommodationDto update(@PathVariable UUID id, @RequestBody Accommodation updated) {
         Accommodation existing = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hébergement non trouvé"));
         existing.setName(updated.getName());
@@ -52,7 +52,7 @@ public class AccommodationController {
         existing.setCapacity(updated.getCapacity());
         existing.setBasePrice(updated.getBasePrice());
         existing.setDescription(updated.getDescription());
-        return repository.save(existing);
+        return AccommodationDto.from(repository.save(existing));
     }
 
     @DeleteMapping("/{id}")

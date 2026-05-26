@@ -2,6 +2,7 @@ package com.camping.pms.bookings;
 
 import com.camping.pms.accommodations.Accommodation;
 import com.camping.pms.accommodations.AccommodationRepository;
+import com.camping.pms.bookings.dto.BookingDto;
 import com.camping.pms.customers.Customer;
 import com.camping.pms.customers.CustomerRepository;
 import com.camping.pms.security.CurrentUserService;
@@ -34,25 +35,29 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<Booking> findAll() {
-        return bookingRepository.findAll();
+    public List<BookingDto> findAll() {
+        return bookingRepository.findAll().stream()
+                .map(BookingDto::from)
+                .toList();
     }
 
     @GetMapping("/my")
-    public List<Booking> findMine() {
+    public List<BookingDto> findMine() {
         Customer currentUser = currentUserService.getCurrentUser();
-        return bookingRepository.findByCustomer(currentUser);
+        return bookingRepository.findByCustomer(currentUser).stream()
+                .map(BookingDto::from)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    public Booking findById(@PathVariable UUID id) {
-        return bookingRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation non trouvée"));
+    public BookingDto findById(@PathVariable UUID id) {
+        return BookingDto.from(bookingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation non trouvée")));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Booking create(@RequestBody CreateBookingRequest request) {
+    public BookingDto create(@RequestBody CreateBookingRequest request) {
         Customer currentUser = currentUserService.getCurrentUser();
 
         Accommodation acc = accommodationRepository.findById(request.accommodationId())
@@ -84,15 +89,15 @@ public class BookingController {
         booking.setTotalPrice(total);
         booking.setStatus("PENDING");
 
-        return bookingRepository.save(booking);
+        return BookingDto.from(bookingRepository.save(booking));
     }
 
     @PatchMapping("/{id}/status")
-    public Booking updateStatus(@PathVariable UUID id, @RequestParam String status) {
+    public BookingDto updateStatus(@PathVariable UUID id, @RequestParam String status) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation non trouvée"));
         booking.setStatus(status);
-        return bookingRepository.save(booking);
+        return BookingDto.from(bookingRepository.save(booking));
     }
 
     @DeleteMapping("/{id}")
