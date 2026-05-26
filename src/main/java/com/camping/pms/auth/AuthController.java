@@ -2,6 +2,7 @@ package com.camping.pms.auth;
 
 import com.camping.pms.customers.Customer;
 import com.camping.pms.customers.CustomerRepository;
+import com.camping.pms.security.CurrentUserService;
 import com.camping.pms.security.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,13 +20,21 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CurrentUserService currentUserService;
 
     public AuthController(JwtService jwtService, AuthenticationManager authenticationManager,
-                          CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
+                          CustomerRepository customerRepository, PasswordEncoder passwordEncoder,
+                          CurrentUserService currentUserService) {
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
+        this.currentUserService = currentUserService;
+    }
+
+    @GetMapping("/me")
+    public Customer me() {
+        return currentUserService.getCurrentUser();
     }
 
     @PostMapping("/login")
@@ -37,7 +46,7 @@ public class AuthController {
                     request.getPassword()
                 )
             );
-            Customer customer = (Customer) customerRepository.findByEmail(request.getUsername())
+            Customer customer = customerRepository.findByEmail(request.getUsername())
                     .orElseThrow();
             String accessToken = jwtService.generateToken(customer.getEmail());
             String refreshToken = jwtService.generateRefreshToken(customer.getEmail());
@@ -69,7 +78,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public AuthResponse refresh(@RequestBody RefreshRequest request) {
         String email = jwtService.extractUsername(request.getRefreshToken());
-        Customer customer = (Customer) customerRepository.findByEmail(email)
+        Customer customer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur non trouvé"));
         if (!request.getRefreshToken().equals(customer.getRefreshToken())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token invalide");

@@ -4,6 +4,7 @@ import com.camping.pms.accommodations.Accommodation;
 import com.camping.pms.accommodations.AccommodationRepository;
 import com.camping.pms.customers.Customer;
 import com.camping.pms.customers.CustomerRepository;
+import com.camping.pms.security.CurrentUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,13 +21,16 @@ public class BookingController {
     private final BookingRepository bookingRepository;
     private final AccommodationRepository accommodationRepository;
     private final CustomerRepository customerRepository;
+    private final CurrentUserService currentUserService;
 
     public BookingController(BookingRepository bookingRepository,
                              AccommodationRepository accommodationRepository,
-                             CustomerRepository customerRepository) {
+                             CustomerRepository customerRepository,
+                             CurrentUserService currentUserService) {
         this.bookingRepository = bookingRepository;
         this.accommodationRepository = accommodationRepository;
         this.customerRepository = customerRepository;
+        this.currentUserService = currentUserService;
     }
 
     @GetMapping
@@ -43,10 +47,10 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Booking create(@RequestBody CreateBookingRequest request) {
+        Customer currentUser = currentUserService.getCurrentUser();
+
         Accommodation acc = accommodationRepository.findById(request.accommodationId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hébergement non trouvé"));
-        Customer customer = customerRepository.findById(request.customerId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Client non trouvé"));
 
         long nights = ChronoUnit.DAYS.between(request.startDate(), request.endDate());
         if (nights <= 0) {
@@ -56,7 +60,7 @@ public class BookingController {
 
         Booking booking = new Booking();
         booking.setAccommodation(acc);
-        booking.setCustomer(customer);
+        booking.setCustomer(currentUser);
         booking.setStartDate(request.startDate());
         booking.setEndDate(request.endDate());
         booking.setAdults(request.adults());
