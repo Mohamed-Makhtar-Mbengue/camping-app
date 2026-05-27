@@ -2,9 +2,12 @@ package com.camping.pms.auth;
 
 import com.camping.pms.customers.Customer;
 import com.camping.pms.customers.CustomerRepository;
+import com.camping.pms.customers.dto.CustomerDto;
 import com.camping.pms.security.CurrentUserService;
 import com.camping.pms.security.JwtService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -35,8 +40,8 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public Customer me() {
-        return currentUserService.getCurrentUser();
+    public CustomerDto me() {
+        return CustomerDto.from(currentUserService.getCurrentUser());
     }
 
     @PostMapping("/login")
@@ -54,8 +59,10 @@ public class AuthController {
             String refreshToken = jwtService.generateRefreshToken(customer.getEmail());
             customer.setRefreshToken(refreshToken);
             customerRepository.save(customer);
+            log.info("Login réussi pour : {}", request.getUsername());
             return new AuthResponse(accessToken, refreshToken);
         } catch (AuthenticationException e) {
+            log.warn("Échec login pour : {}", request.getUsername());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Identifiants invalides");
         }
     }
@@ -74,6 +81,7 @@ public class AuthController {
         String refreshToken = jwtService.generateRefreshToken(request.getEmail());
         customer.setRefreshToken(refreshToken);
         customerRepository.save(customer);
+        log.info("Nouvel utilisateur enregistré : {}", request.getEmail());
         return new AuthResponse(jwtService.generateToken(request.getEmail()), refreshToken);
     }
 
@@ -89,12 +97,14 @@ public class AuthController {
         String newRefreshToken = jwtService.generateRefreshToken(email);
         customer.setRefreshToken(newRefreshToken);
         customerRepository.save(customer);
+        log.info("Token rafraîchi pour : {}", email);
         return new AuthResponse(newAccessToken, newRefreshToken);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         Customer customer = currentUserService.getCurrentUser();
+        log.info("Logout : {}", customer.getEmail());
         customer.setRefreshToken(null);
         customerRepository.save(customer);
         return ResponseEntity.noContent().build();
