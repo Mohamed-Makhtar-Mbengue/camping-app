@@ -1,0 +1,45 @@
+<app-navbar />
+
+<div class="dashboard-container">
+  <h1>Tableau de bord</h1>
+
+  <div class="stats-grid">
+    <mat-card class="stat-card" routerLink="/accommodations">
+      <mat-card-content>
+        <mat-icon class="stat-icon accommodation">cabin</mat-icon>
+        <div class="stat-info">
+          <span class="stat-number">{{ stats.accommodations }}</span>
+          <span class="stat-label">Hébergements</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card" routerLink="/bookings">
+      <mat-card-content>
+        <mat-icon class="stat-icon booking">event</mat-icon>
+        <div class="stat-info">
+          <span class="stat-number">{{ stats.myBookings }}</span>
+          <span class="stat-label">Mes réservations</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="quick-actions">
+    <h2>Actions rapides</h2>
+    <div class="actions-grid">
+      <mat-card class="action-card" routerLink="/accommodations">
+        <mat-card-content>
+          <mat-icon>search</mat-icon>
+          <span>Voir les hébergements</span>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="action-card" routerLink="/bookings">
+        <mat-card-content>
+          <mat-icon>add_circle</mat-icon>
+          <span>Mes réservations</span>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

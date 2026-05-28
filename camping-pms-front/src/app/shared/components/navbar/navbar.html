@@ -1,0 +1,35 @@
+<mat-toolbar color="primary" class="navbar">
+  <span class="logo">🏕️ Camping PMS</span>
+
+  <span class="spacer"></span>
+
+  <nav class="nav-links">
+    <a mat-button routerLink="/dashboard" routerLinkActive="active-link">
+      <mat-icon>dashboard</mat-icon> Dashboard
+    </a>
+    <a mat-button routerLink="/accommodations" routerLinkActive="active-link">
+      <mat-icon>cabin</mat-icon> Hébergements
+    </a>
+    <a mat-button routerLink="/bookings" routerLinkActive="active-link">
+      <mat-icon>event</mat-icon> Réservations
+    </a>
+  </nav>
+
+  <span class="spacer"></span>
+
+  @if (authService.currentUser$ | async; as user) {
+    <button mat-button [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+      {{ user.firstName }}
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/profile">
+        <mat-icon>person</mat-icon> Mon profil
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon> Déconnexion
+      </button>
+    </mat-menu>
+  }
+</mat-toolbar>
