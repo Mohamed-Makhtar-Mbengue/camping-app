@@ -5,7 +5,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AuthService } from '../../../core/services/auth.service';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-navbar',
@@ -16,7 +18,8 @@ import { AuthService } from '../../../core/services/auth.service';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule
+    MatMenuModule,
+    MatSlideToggleModule
   ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss'
@@ -24,6 +27,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class Navbar implements OnInit {
   constructor(
     public authService: AuthService,
+    public themeService: ThemeService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}

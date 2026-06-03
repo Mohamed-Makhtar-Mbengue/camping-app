@@ -1,1 +1,51 @@
-<p>profile works!</p>
+<app-navbar />
+
+<div class="profile-container">
+  @if (user) {
+    <mat-card class="profile-card">
+      <mat-card-header>
+        <div class="avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <mat-card-title>{{ user.firstName }} {{ user.lastName }}</mat-card-title>
+        <mat-card-subtitle>{{ user.role }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-divider />
+
+        <div class="info-list">
+          <div class="info-row">
+            <mat-icon>email</mat-icon>
+            <div>
+              <label>Email</label>
+              <span>{{ user.email }}</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <mat-icon>phone</mat-icon>
+            <div>
+              <label>Téléphone</label>
+              <span>{{ user.phone || 'Non renseigné' }}</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <mat-icon>shield</mat-icon>
+            <div>
+              <label>Rôle</label>
+              <span>{{ user.role }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="warn" (click)="logout()">
+          <mat-icon>logout</mat-icon> Déconnexion
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</div>

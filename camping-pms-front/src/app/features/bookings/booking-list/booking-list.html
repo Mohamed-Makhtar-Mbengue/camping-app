@@ -1,1 +1,87 @@
-<p>booking-list works!</p>
+<app-navbar />
+
+<div class="bookings-container">
+  <div class="header">
+    <h1>📅 Réservations</h1>
+    <button mat-raised-button color="primary" (click)="openForm()">
+      <mat-icon>add</mat-icon> Nouvelle réservation
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="loading">
+      <mat-spinner />
+    </div>
+  } @else if (bookings.length === 0) {
+    <div class="empty">
+      <mat-icon>event_busy</mat-icon>
+      <p>Aucune réservation trouvée</p>
+      <button mat-raised-button color="primary" (click)="openForm()">
+        Faire une réservation
+      </button>
+    </div>
+  } @else {
+    <div class="grid">
+      @for (booking of bookings; track booking.id) {
+        <mat-card class="booking-card">
+          <mat-card-header>
+            <mat-card-title>
+              {{ booking.accommodation.name }}
+            </mat-card-title>
+            <mat-card-subtitle>
+              <mat-chip [color]="getStatusColor(booking.status)" highlighted>
+                {{ getStatusLabel(booking.status) }}
+              </mat-chip>
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="booking-details">
+              <div class="detail-row">
+                <mat-icon>event</mat-icon>
+                <span>{{ booking.startDate | date:'dd/MM/yyyy' }}
+                  → {{ booking.endDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>nights_stay</mat-icon>
+                <span>{{ getNights(booking.startDate, booking.endDate) }} nuit(s)</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>group</mat-icon>
+                <span>{{ booking.adults }} adulte(s) + {{ booking.children }} enfant(s)</span>
+              </div>
+              <div class="detail-row price">
+                <mat-icon>euro</mat-icon>
+                <span>{{ booking.totalPrice }}€ total</span>
+              </div>
+              @if (authService.isAdmin()) {
+                <div class="detail-row">
+                  <mat-icon>person</mat-icon>
+                  <span>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</span>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions>
+            @if (authService.isAdmin() && booking.status === 'PENDING') {
+              <button mat-stroked-button color="primary"
+                      (click)="updateStatus(booking.id, 'CONFIRMED')">
+                <mat-icon>check</mat-icon> Confirmer
+              </button>
+              <button mat-stroked-button color="warn"
+                      (click)="updateStatus(booking.id, 'CANCELLED')">
+                <mat-icon>close</mat-icon> Annuler
+              </button>
+            }
+            @if (booking.status !== 'CONFIRMED') {
+              <button mat-icon-button color="warn" (click)="delete(booking.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

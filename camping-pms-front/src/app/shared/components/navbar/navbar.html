@@ -17,19 +17,26 @@
 
   <span class="spacer"></span>
 
-  @if (authService.currentUser$ | async; as user) {
-    <button mat-button [matMenuTriggerFor]="userMenu">
-      <mat-icon>account_circle</mat-icon>
-      {{ user.firstName }}
-      <mat-icon>arrow_drop_down</mat-icon>
+  <div class="right-section">
+    <button mat-icon-button (click)="themeService.toggleTheme()"
+            [title]="themeService.isDarkMode() ? 'Mode clair' : 'Mode sombre'">
+      <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
     </button>
-    <mat-menu #userMenu="matMenu">
-      <button mat-menu-item routerLink="/profile">
-        <mat-icon>person</mat-icon> Mon profil
+
+    @if (authService.currentUser$ | async; as user) {
+      <button mat-button [matMenuTriggerFor]="userMenu">
+        <mat-icon>account_circle</mat-icon>
+        {{ user.firstName }}
+        <mat-icon>arrow_drop_down</mat-icon>
       </button>
-      <button mat-menu-item (click)="logout()">
-        <mat-icon>logout</mat-icon> Déconnexion
-      </button>
-    </mat-menu>
-  }
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item routerLink="/profile">
+          <mat-icon>person</mat-icon> Mon profil
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon> Déconnexion
+        </button>
+      </mat-menu>
+    }
+  </div>
 </mat-toolbar>
