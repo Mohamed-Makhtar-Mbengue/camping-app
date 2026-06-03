@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -21,11 +21,18 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss'
 })
-export class Navbar {
+export class Navbar implements OnInit {
   constructor(
     public authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
+
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(() => {
+      this.cdr.detectChanges();
+    });
+  }
 
   logout(): void {
     this.authService.logout().subscribe({

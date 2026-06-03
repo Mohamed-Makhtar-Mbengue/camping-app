@@ -5,13 +5,23 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
     List<Booking> findByCustomer(Customer customer);
+
+    long countByStatus(String status);
+
+    @Query("SELECT COALESCE(SUM(b.totalPrice), 0) FROM Booking b WHERE b.status != 'CANCELLED'")
+    BigDecimal sumTotalPrice();
+
+    @Query("SELECT COALESCE(SUM(b.adults + b.children), 0) FROM Booking b WHERE b.status != 'CANCELLED'")
+    int sumTotalPersons();
 
     @Query("""
         SELECT COUNT(b) > 0 FROM Booking b
@@ -25,4 +35,20 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate
     );
+
+    @Query("""
+        SELECT new map(
+            a.name as accommodationName,
+            a.type as accommodationType,
+            COUNT(b) as totalBookings,
+            COALESCE(SUM(b.adults + b.children), 0) as totalPersons,
+            COALESCE(SUM(b.totalPrice), 0) as totalRevenue
+        )
+        FROM Booking b
+        JOIN b.accommodation a
+        WHERE b.status != 'CANCELLED'
+        GROUP BY a.id, a.name, a.type
+        ORDER BY totalBookings DESC
+    """)
+    List<Map<String, Object>> countBookingsByAccommodation();
 }

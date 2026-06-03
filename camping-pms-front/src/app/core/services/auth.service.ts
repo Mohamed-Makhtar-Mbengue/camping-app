@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface AuthResponse {
@@ -51,9 +52,13 @@ export class AuthService {
   logout(): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/logout`, {}).pipe(
       tap(() => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        localStorage.clear();
         this.currentUserSubject.next(null);
+      }),
+      catchError(err => {
+        localStorage.clear();
+        this.currentUserSubject.next(null);
+        return throwError(() => err);
       })
     );
   }
@@ -67,10 +72,19 @@ export class AuthService {
 
   refreshToken(): Observable<AuthResponse> {
     const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) {
+      localStorage.clear();
+      return throwError(() => new Error('No refresh token'));
+    }
     return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
       tap(response => {
         localStorage.setItem('accessToken', response.accessToken);
         localStorage.setItem('refreshToken', response.refreshToken);
+      }),
+      catchError(err => {
+        localStorage.clear();
+        this.currentUserSubject.next(null);
+        return throwError(() => err);
       })
     );
   }

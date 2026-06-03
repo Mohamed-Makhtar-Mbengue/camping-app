@@ -1,1 +1,66 @@
-<p>accommodation-list works!</p>
+<app-navbar />
+
+<div class="accommodations-container">
+  <div class="header">
+    <h1>🏕️ Hébergements</h1>
+    @if (authService.isAdmin()) {
+      <button mat-raised-button color="primary" (click)="openForm()">
+        <mat-icon>add</mat-icon> Ajouter
+      </button>
+    }
+  </div>
+
+  @if (loading) {
+    <div class="loading">
+      <mat-spinner />
+    </div>
+  } @else {
+    <div class="grid">
+      @for (acc of accommodations; track acc.id) {
+        <mat-card class="accommodation-card">
+          <mat-card-header>
+            <mat-card-title>
+              {{ getTypeIcon(acc.type) }} {{ acc.name }}
+            </mat-card-title>
+            <mat-card-subtitle>
+              <mat-chip [color]="getTypeColor(acc.type)" highlighted>
+                {{ acc.type }}
+              </mat-chip>
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <p class="description">{{ acc.description }}</p>
+            <div class="details">
+              <span><mat-icon>group</mat-icon> {{ acc.capacity }} personnes</span>
+              <span class="price"><mat-icon>euro</mat-icon> {{ acc.basePrice }}€ / nuit</span>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button mat-stroked-button color="primary"
+                    [routerLink]="['/bookings/new']"
+                    [queryParams]="{accommodationId: acc.id}">
+              <mat-icon>event</mat-icon> Réserver
+            </button>
+            @if (authService.isAdmin()) {
+              <button mat-icon-button color="accent" (click)="openForm(acc)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="delete(acc.id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+
+    <mat-paginator
+      [length]="totalElements"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[6, 9, 12]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons />
+  }
+</div>

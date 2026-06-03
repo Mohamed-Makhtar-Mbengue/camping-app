@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,13 +20,22 @@ export class Dashboard implements OnInit {
     myBookings: 0
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.http.get<any>(`${environment.apiUrl}/api/accommodations?page=0&size=1`)
-      .subscribe(data => this.stats.accommodations = data.totalElements);
+      .subscribe(data => {
+        this.stats.accommodations = data.totalElements;
+        this.cdr.detectChanges();
+      });
 
     this.http.get<any[]>(`${environment.apiUrl}/api/bookings/my`)
-      .subscribe(data => this.stats.myBookings = data.length);
+      .subscribe(data => {
+        this.stats.myBookings = data.length;
+        this.cdr.detectChanges();
+      });
   }
 }

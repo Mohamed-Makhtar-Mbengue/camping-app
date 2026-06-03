@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -35,7 +35,8 @@ export class Login {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.form = this.fb.group({
       username: ['', [Validators.required, Validators.email]],
@@ -47,13 +48,19 @@ export class Login {
     if (this.form.invalid) return;
     this.loading = true;
     this.error = '';
+    this.cdr.detectChanges();
 
     const { username, password } = this.form.value;
     this.authService.login(username, password).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        this.loading = false;
+        this.cdr.detectChanges();
+        this.router.navigate(['/dashboard']);
+      },
       error: () => {
         this.error = 'Email ou mot de passe incorrect';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
