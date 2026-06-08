@@ -1,0 +1,86 @@
+<app-public-navbar />
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>🏕️ Bienvenue au Camping</h1>
+    <p>Découvrez nos hébergements et réservez votre séjour en pleine nature</p>
+    <div class="hero-buttons">
+      <button mat-raised-button color="primary" (click)="scrollToAccommodations()">
+        <mat-icon>search</mat-icon> Voir les hébergements
+      </button>
+    </div>
+    <div class="hero-features">
+      <div class="feature">
+        <mat-icon>nature</mat-icon>
+        <span>Pleine nature</span>
+      </div>
+      <div class="feature">
+        <mat-icon>pool</mat-icon>
+        <span>Piscine</span>
+      </div>
+      <div class="feature">
+        <mat-icon>restaurant</mat-icon>
+        <span>Restaurant</span>
+      </div>
+      <div class="feature">
+        <mat-icon>wifi</mat-icon>
+        <span>Wifi gratuit</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Accommodations Section -->
+<section class="accommodations-section" id="accommodations">
+  <div class="container">
+    <h2>Nos Hébergements</h2>
+    <p class="subtitle">Choisissez parmi nos différents types d'hébergements</p>
+
+    @if (loading) {
+      <div class="loading">
+        <mat-spinner />
+      </div>
+    } @else {
+      <div class="grid">
+        @for (acc of accommodations; track acc.id) {
+          <mat-card class="accommodation-card">
+            <img [src]="getPlaceholderImage(acc.type)"
+                 [alt]="acc.name" class="card-image">
+            <mat-card-header>
+              <mat-card-title>{{ getTypeIcon(acc.type) }} {{ acc.name }}</mat-card-title>
+              <mat-card-subtitle>{{ acc.type }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="description">{{ acc.description }}</p>
+              <div class="details">
+                <span><mat-icon>group</mat-icon> {{ acc.capacity }} pers.</span>
+                <span class="price">{{ acc.basePrice }}€ / nuit</span>
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <a mat-raised-button color="primary"
+                 [routerLink]="['/hebergements', acc.id]">
+                Voir & Réserver
+              </a>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+
+      <mat-paginator
+        [length]="totalElements"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[6, 9, 12]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons />
+    }
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <p>🏕️ Camping PMS — Tous droits réservés {{ 2026 }}</p>
+  </div>
+</footer>

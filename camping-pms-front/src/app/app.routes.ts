@@ -2,7 +2,34 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  // Routes publiques
+  {
+    path: '',
+    loadComponent: () => import('./features/public/home/home')
+      .then(m => m.Home)
+  },
+  {
+    path: 'hebergements',
+    loadComponent: () => import('./features/public/home/home')
+      .then(m => m.Home)
+  },
+  {
+    path: 'hebergements/:id',
+    loadComponent: () => import('./features/public/accommodation-detail/accommodation-detail')
+      .then(m => m.AccommodationDetail)
+  },
+  {
+    path: 'reservation/:id',
+    loadComponent: () => import('./features/public/booking-wizard/booking-wizard')
+      .then(m => m.BookingWizard)
+  },
+  {
+    path: 'confirmation',
+    loadComponent: () => import('./features/public/confirmation/confirmation')
+      .then(m => m.Confirmation)
+  },
+
+  // Routes privées
   {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login')
@@ -37,5 +64,5 @@ export const routes: Routes = [
     loadComponent: () => import('./features/profile/profile')
       .then(m => m.Profile)
   },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: '**', redirectTo: '' }
 ];

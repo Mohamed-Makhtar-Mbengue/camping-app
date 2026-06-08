@@ -1,0 +1,52 @@
+<app-public-navbar />
+
+<div class="confirmation-container">
+  @if (confirmation) {
+    <div class="success-icon">
+      <mat-icon>check_circle</mat-icon>
+    </div>
+
+    <h1>Réservation confirmée ! 🎉</h1>
+    <p class="subtitle">Un email de confirmation a été envoyé à {{ confirmation.customerEmail }}</p>
+
+    <mat-card class="confirmation-card">
+      <mat-card-content>
+        <h2>Récapitulatif de votre réservation</h2>
+        <mat-divider />
+
+        <div class="details">
+          <div class="detail-row">
+            <span class="label">Hébergement</span>
+            <span class="value">{{ confirmation.accommodation }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Arrivée</span>
+            <span class="value">{{ confirmation.startDate | date:'dd MMMM yyyy':'':'fr' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Départ</span>
+            <span class="value">{{ confirmation.endDate | date:'dd MMMM yyyy':'':'fr' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Durée</span>
+            <span class="value">{{ getNights() }} nuit(s)</span>
+          </div>
+          <mat-divider />
+          <div class="detail-row total">
+            <span class="label">Total payé</span>
+            <span class="value price">{{ confirmation.totalPrice }}€</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="actions">
+      <a mat-raised-button color="primary" routerLink="/">
+        <mat-icon>home</mat-icon> Retour à l'accueil
+      </a>
+    </div>
+  } @else {
+    <p>Aucune réservation trouvée.</p>
+    <a mat-raised-button routerLink="/">Retour à l'accueil</a>
+  }
+</div>

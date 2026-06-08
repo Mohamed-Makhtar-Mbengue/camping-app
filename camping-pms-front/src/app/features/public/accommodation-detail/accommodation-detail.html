@@ -1,0 +1,65 @@
+<app-public-navbar />
+
+<div class="detail-container">
+  @if (loading) {
+    <div class="loading"><mat-spinner /></div>
+  } @else if (accommodation) {
+    <div class="hero-image">
+      <img [src]="getPlaceholderImage(accommodation.type)"
+           [alt]="accommodation.name">
+      <div class="back-btn">
+        <a mat-stroked-button routerLink="/">
+          <mat-icon>arrow_back</mat-icon> Retour
+        </a>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="main-info">
+        <h1>{{ accommodation.name }}</h1>
+        <p class="type">{{ accommodation.type }}</p>
+        <p class="description">{{ accommodation.description }}</p>
+
+        <div class="features">
+          <div class="feature">
+            <mat-icon>group</mat-icon>
+            <span>Jusqu'à {{ accommodation.capacity }} personnes</span>
+          </div>
+          <div class="feature">
+            <mat-icon>euro</mat-icon>
+            <span>{{ accommodation.basePrice }}€ par nuit</span>
+          </div>
+          <div class="feature">
+            <mat-icon>nature</mat-icon>
+            <span>Pleine nature</span>
+          </div>
+          <div class="feature">
+            <mat-icon>wifi</mat-icon>
+            <span>Wifi inclus</span>
+          </div>
+          <div class="feature">
+            <mat-icon>local_parking</mat-icon>
+            <span>Parking gratuit</span>
+          </div>
+          <div class="feature">
+            <mat-icon>pool</mat-icon>
+            <span>Piscine</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="booking-cta">
+        <mat-card class="cta-card">
+          <mat-card-content>
+            <h2>{{ accommodation.basePrice }}€ <span>/ nuit</span></h2>
+            <p>Capacité : {{ accommodation.capacity }} personnes</p>
+            <a mat-raised-button color="primary" class="reserve-btn"
+               [routerLink]="['/reservation', accommodation.id]">
+              <mat-icon>event</mat-icon> Réserver maintenant
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
+</div>

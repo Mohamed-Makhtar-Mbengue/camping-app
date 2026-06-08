@@ -1,0 +1,158 @@
+<app-public-navbar />
+
+<div class="wizard-container">
+  @if (accommodation) {
+    <div class="wizard-header">
+      <h1>Réserver — {{ accommodation.name }}</h1>
+      <p>{{ accommodation.basePrice }}€ / nuit</p>
+    </div>
+
+    <mat-stepper linear #stepper class="stepper">
+
+      <!-- Étape 1 : Dates -->
+      <mat-step [stepControl]="datesForm" label="Dates & Personnes">
+        <form [formGroup]="datesForm" class="step-form">
+          <div class="dates-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Date d'arrivée</mat-label>
+              <input matInput [matDatepicker]="startPicker"
+                     formControlName="startDate" [min]="minDate">
+              <mat-datepicker-toggle matSuffix [for]="startPicker" />
+              <mat-datepicker #startPicker />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Date de départ</mat-label>
+              <input matInput [matDatepicker]="endPicker"
+                     formControlName="endDate" [min]="minDate">
+              <mat-datepicker-toggle matSuffix [for]="endPicker" />
+              <mat-datepicker #endPicker />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Adultes</mat-label>
+              <input matInput type="number" formControlName="adults" min="1">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Enfants</mat-label>
+              <input matInput type="number" formControlName="children" min="0">
+            </mat-form-field>
+          </div>
+
+          @if (nights > 0) {
+            <div class="price-summary">
+              <span>{{ nights }} nuit(s) × {{ accommodation.basePrice }}€</span>
+              <strong>= {{ totalPrice }}€</strong>
+            </div>
+          }
+
+          @if (availabilityChecked) {
+            <div [class]="isAvailable ? 'available' : 'unavailable'">
+              <mat-icon>{{ isAvailable ? 'check_circle' : 'cancel' }}</mat-icon>
+              {{ isAvailable ? 'Disponible pour ces dates !' : 'Non disponible pour ces dates' }}
+            </div>
+          }
+
+          <div class="step-actions">
+            <button mat-stroked-button type="button"
+                    (click)="checkAvailability()"
+                    [disabled]="datesForm.invalid || loading">
+              @if (loading) { <mat-spinner diameter="20" /> }
+              @else { Vérifier la disponibilité }
+            </button>
+            <button mat-raised-button color="primary" matStepperNext
+                    [disabled]="!isAvailable">
+              Continuer <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Étape 2 : Informations personnelles -->
+      <mat-step [stepControl]="personalForm" label="Vos informations">
+        <form [formGroup]="personalForm" class="step-form">
+          <div class="personal-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Prénom</mat-label>
+              <input matInput formControlName="firstName">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nom</mat-label>
+              <input matInput formControlName="lastName">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Téléphone</mat-label>
+              <input matInput formControlName="phone">
+            </mat-form-field>
+          </div>
+
+          <div class="step-actions">
+            <button mat-stroked-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon> Retour
+            </button>
+            <button mat-raised-button color="primary" matStepperNext
+                    [disabled]="personalForm.invalid">
+              Continuer <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Étape 3 : Paiement simulé -->
+      <mat-step [stepControl]="paymentForm" label="Paiement">
+        <form [formGroup]="paymentForm" class="step-form">
+          <div class="payment-summary">
+            <mat-icon>lock</mat-icon>
+            <span>Paiement sécurisé — Total : <strong>{{ totalPrice }}€</strong></span>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Numéro de carte (16 chiffres)</mat-label>
+            <input matInput formControlName="cardNumber"
+                   placeholder="1234567890123456" maxlength="16">
+            <mat-icon matSuffix>credit_card</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nom sur la carte</mat-label>
+            <input matInput formControlName="cardName">
+          </mat-form-field>
+
+          <div class="card-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Date d'expiration (MM/YY)</mat-label>
+              <input matInput formControlName="expiry" placeholder="12/26" maxlength="5">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>CVV</mat-label>
+              <input matInput formControlName="cvv"
+                     type="password" maxlength="3">
+            </mat-form-field>
+          </div>
+
+          <div class="step-actions">
+            <button mat-stroked-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon> Retour
+            </button>
+            <button mat-raised-button color="primary"
+                    (click)="confirm()"
+                    [disabled]="paymentForm.invalid || loading">
+              @if (loading) { <mat-spinner diameter="20" /> }
+              @else { Confirmer et payer {{ totalPrice }}€ }
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+    </mat-stepper>
+  }
+</div>
