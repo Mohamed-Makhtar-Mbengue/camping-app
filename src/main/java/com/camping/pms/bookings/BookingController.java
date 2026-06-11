@@ -2,6 +2,7 @@ package com.camping.pms.bookings;
 
 import com.camping.pms.accommodations.Accommodation;
 import com.camping.pms.accommodations.AccommodationRepository;
+import com.camping.pms.accommodations.PricingService;
 import com.camping.pms.bookings.dto.BookingDto;
 import com.camping.pms.customers.Customer;
 import com.camping.pms.customers.CustomerRepository;
@@ -23,15 +24,18 @@ public class BookingController {
     private final AccommodationRepository accommodationRepository;
     private final CustomerRepository customerRepository;
     private final CurrentUserService currentUserService;
+    private final PricingService pricingService;
 
     public BookingController(BookingRepository bookingRepository,
                              AccommodationRepository accommodationRepository,
                              CustomerRepository customerRepository,
-                             CurrentUserService currentUserService) {
+                             CurrentUserService currentUserService,
+                             PricingService pricingService) {
         this.bookingRepository = bookingRepository;
         this.accommodationRepository = accommodationRepository;
         this.customerRepository = customerRepository;
         this.currentUserService = currentUserService;
+        this.pricingService = pricingService;
     }
 
     @GetMapping
@@ -77,7 +81,17 @@ public class BookingController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Hébergement non disponible pour ces dates");
         }
 
-        BigDecimal total = acc.getBasePrice().multiply(BigDecimal.valueOf(nights));
+        // Calcul prix dynamique selon saison
+        BigDecimal total = pricingService.calculatePrice(
+                request.accommodationId(),
+                request.startDate(),
+                request.endDate()
+        );
+
+        // Si pas de saison définie, utilise le basePrice
+        if (total.compareTo(BigDecimal.ZERO) == 0) {
+            total = acc.getBasePrice().multiply(BigDecimal.valueOf(nights));
+        }
 
         Booking booking = new Booking();
         booking.setAccommodation(acc);
