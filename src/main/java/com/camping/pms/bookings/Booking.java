@@ -33,4 +33,17 @@ public class Booking {
     private Integer children;
     private BigDecimal totalPrice;
     private String status;
+
+    // Nouvelles infos
+    private String address;
+    private String city;
+    private String postalCode;
+    private String country;
+    private String licensePlate;
+    private String secondVehicle;
+    private Integer pets;
+    private Integer extraPersons;
+    private String vehicleType;
+    private BigDecimal supplementsTotal;
+    private String notes;
 }

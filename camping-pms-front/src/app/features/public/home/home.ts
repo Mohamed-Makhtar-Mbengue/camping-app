@@ -85,11 +85,13 @@ export class Home implements OnInit {
 
   getPlaceholderImage(type: string): string {
     const images: Record<string, string> = {
-      'TENTE': 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400&h=250&fit=crop',
-      'MOBIL_HOME': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=250&fit=crop',
-      'CHALET': 'https://images.unsplash.com/photo-1518732714860-b62714ce0c59?w=400&h=250&fit=crop',
-      'BUNGALOW': 'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=400&h=250&fit=crop'
+      'MOBIL_HOME': 'https://picsum.photos/seed/mobilhome/400/250',
+      'CHALET': 'https://picsum.photos/seed/chalet/400/250',
+      'TENTE': 'https://picsum.photos/seed/tente/400/250',
+      'TIPI': 'https://picsum.photos/seed/tipi/400/250',
+      'CABANE': 'https://picsum.photos/seed/cabane/400/250',
+      'EMPLACEMENT': 'https://picsum.photos/seed/emplacement/400/250'
     };
-    return images[type] || 'https://images.unsplash.com/photo-1537225228614-56cc3556d7ed?w=400&h=250&fit=crop';
+    return images[type] || 'https://picsum.photos/seed/camping/400/250';
   }
 }

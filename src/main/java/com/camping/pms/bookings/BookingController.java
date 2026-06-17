@@ -25,17 +25,19 @@ public class BookingController {
     private final CustomerRepository customerRepository;
     private final CurrentUserService currentUserService;
     private final PricingService pricingService;
+    private final EmailService emailService;
 
     public BookingController(BookingRepository bookingRepository,
                              AccommodationRepository accommodationRepository,
                              CustomerRepository customerRepository,
                              CurrentUserService currentUserService,
-                             PricingService pricingService) {
+                             PricingService pricingService, EmailService emailService) {
         this.bookingRepository = bookingRepository;
         this.accommodationRepository = accommodationRepository;
         this.customerRepository = customerRepository;
         this.currentUserService = currentUserService;
         this.pricingService = pricingService;
+        this.emailService = emailService;
     }
 
     @GetMapping
@@ -111,7 +113,18 @@ public class BookingController {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation non trouvée"));
         booking.setStatus(status);
-        return BookingDto.from(bookingRepository.save(booking));
+        Booking saved = bookingRepository.save(booking);
+
+        // Envoie l'email si confirmation
+        if ("CONFIRMED".equals(status)) {
+            try {
+                emailService.sendConfirmationEmail(saved);
+            } catch (Exception e) {
+                // Log l'erreur mais ne bloque pas la confirmation
+                System.err.println("Erreur envoi email: " + e.getMessage());
+            }
+        }
+        return BookingDto.from(saved);
     }
 
     @DeleteMapping("/{id}")
