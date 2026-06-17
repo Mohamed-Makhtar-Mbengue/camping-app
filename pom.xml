@@ -73,21 +73,21 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Email -->
+		<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-mail</artifactId>
+			</dependency>
+
+			<!-- PDF avec iText -->
+			<dependency>
+				<groupId>com.itextpdf</groupId>
+				<artifactId>itext7-core</artifactId>
+				<version>8.0.3</version>
+				<type>pom</type>
+			</dependency>
 	</dependencies>
 
-	<!-- Email -->
-<dependency>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-mail</artifactId>
-	</dependency>
-
-	<!-- PDF avec iText -->
-	<dependency>
-		<groupId>com.itextpdf</groupId>
-		<artifactId>itext7-core</artifactId>
-		<version>8.0.3</version>
-		<type>pom</type>
-	</dependency>
 
 	<build>
 		<plugins>

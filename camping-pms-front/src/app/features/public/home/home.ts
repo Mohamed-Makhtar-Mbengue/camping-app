@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,13 +27,23 @@ import { Accommodation } from '../../../core/services/accommodation.service';
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
   accommodations: Accommodation[] = [];
   totalElements = 0;
   pageSize = 9;
   currentPage = 0;
   loading = true;
-  showAccommodations = false;
+
+  heroImages = [
+    { url: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1600&h=900&fit=crop', label: 'Piscine' },
+    { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&h=900&fit=crop', label: 'Restaurant' },
+    { url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1600&h=900&fit=crop', label: 'Espace bien-être' },
+    { url: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1600&h=900&fit=crop', label: 'Terrain multisport' },
+    { url: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1600&h=900&fit=crop', label: 'Salle de sport' },
+    { url: 'https://images.unsplash.com/photo-1560253787-29c50689bbe5?w=1600&h=900&fit=crop', label: 'Espace jeux gonflables' }
+  ];
+  currentHeroIndex = 0;
+  private heroInterval: any;
 
   constructor(
     private publicService: PublicService,
@@ -42,6 +52,18 @@ export class Home implements OnInit {
 
   ngOnInit(): void {
     this.loadAccommodations();
+    this.startHeroCarousel();
+  }
+
+  ngOnDestroy(): void {
+    if (this.heroInterval) clearInterval(this.heroInterval);
+  }
+
+  startHeroCarousel(): void {
+    this.heroInterval = setInterval(() => {
+      this.currentHeroIndex = (this.currentHeroIndex + 1) % this.heroImages.length;
+      this.cdr.detectChanges();
+    }, 4000);
   }
 
   loadAccommodations(): void {
@@ -67,18 +89,13 @@ export class Home implements OnInit {
   }
 
   scrollToAccommodations(): void {
-    this.showAccommodations = true;
-    setTimeout(() => {
-      document.getElementById('accommodations')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    document.getElementById('accommodations')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   getTypeIcon(type: string): string {
     const icons: Record<string, string> = {
-      'TENTE': '⛺',
-      'MOBIL_HOME': '🏠',
-      'CHALET': '🏔️',
-      'BUNGALOW': '🏡'
+      'TENTE': '⛺', 'MOBIL_HOME': '🏠', 'CHALET': '🏔️',
+      'BUNGALOW': '🏡', 'TIPI': '🛖', 'CABANE': '🌳', 'EMPLACEMENT': '🚐'
     };
     return icons[type] || '🏕️';
   }

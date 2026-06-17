@@ -10,6 +10,7 @@ import com.camping.pms.security.CurrentUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import com.camping.pms.email.EmailService;
 
 import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
