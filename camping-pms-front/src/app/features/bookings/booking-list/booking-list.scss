@@ -71,6 +71,24 @@
             color: #333;
             mat-icon { color: #4caf50; }
           }
+          .deposit-section {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+
+            .detail-row {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              flex-wrap: wrap;
+            }
+
+            .deduction-info {
+              font-size: 13px;
+              color: #c62828;
+              margin-top: 4px;
+            }
+          }
         }
       }
     }

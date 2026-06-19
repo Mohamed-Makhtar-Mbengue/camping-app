@@ -3,7 +3,7 @@ package com.camping.pms.auth;
 import com.camping.pms.customers.Customer;
 import com.camping.pms.customers.CustomerRepository;
 import com.camping.pms.customers.dto.CustomerDto;
-import com.camping.pms.security.CurrentUserService;
+import com.camping.pms.CurrentUserService;
 import com.camping.pms.security.JwtService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

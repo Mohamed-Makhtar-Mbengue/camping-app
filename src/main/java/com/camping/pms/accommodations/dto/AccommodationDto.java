@@ -2,6 +2,7 @@ package com.camping.pms.accommodations.dto;
 
 import com.camping.pms.accommodations.Accommodation;
 import lombok.Data;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ public class AccommodationDto {
     private BigDecimal basePrice;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
+    private BigDecimal depositRequired;
     private String description;
 
     public static AccommodationDto from(Accommodation accommodation) {
@@ -29,6 +31,7 @@ public class AccommodationDto {
         dto.setBasePrice(accommodation.getBasePrice());
         dto.setMinPrice(accommodation.getMinPrice());
         dto.setMaxPrice(accommodation.getMaxPrice());
+        dto.setDepositRequired(accommodation.getDepositRequired());
         dto.setDescription(accommodation.getDescription());
         return dto;
     }

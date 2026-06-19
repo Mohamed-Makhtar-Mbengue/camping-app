@@ -113,4 +113,59 @@ export class BookingList implements OnInit {
     const end = new Date(endDate);
     return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
   }
+
+  holdDeposit(id: string): void {
+  const amount = prompt('Montant de la caution à percevoir (€) :', '150');
+  if (!amount) return;
+  this.bookingService.holdDeposit(id, parseFloat(amount)).subscribe({
+    next: () => {
+      this.snackBar.open('Caution encaissée', 'Fermer', { duration: 3000 });
+      this.loadBookings();
+    }
+  });
+  }
+
+  returnDeposit(id: string): void {
+    if (confirm('Confirmer le remboursement intégral de la caution ?')) {
+      this.bookingService.returnDeposit(id).subscribe({
+        next: () => {
+          this.snackBar.open('Caution remboursée', 'Fermer', { duration: 3000 });
+          this.loadBookings();
+        }
+      });
+    }
+  }
+
+  partialRetainDeposit(id: string): void {
+    const deduction = prompt('Montant retenu sur la caution (€) :');
+    if (!deduction) return;
+    const reason = prompt('Motif de la retenue :');
+    if (!reason) return;
+    this.bookingService.partialRetainDeposit(id, parseFloat(deduction), reason).subscribe({
+      next: () => {
+        this.snackBar.open('Caution partiellement retenue', 'Fermer', { duration: 3000 });
+        this.loadBookings();
+      }
+    });
+  }
+
+  getDepositStatusLabel(status: string): string {
+    const labels: Record<string, string> = {
+      'PENDING': '⏳ À percevoir',
+      'HELD': '🔒 Encaissée',
+      'RETURNED': '✅ Remboursée',
+      'PARTIALLY_RETAINED': '⚠️ Retenue partiellement'
+    };
+    return labels[status] || status;
+  }
+
+  getDepositStatusColor(status: string): string {
+    const colors: Record<string, string> = {
+      'PENDING': 'accent',
+      'HELD': 'primary',
+      'RETURNED': '',
+      'PARTIALLY_RETAINED': 'warn'
+    };
+    return colors[status] || '';
+  }
 }

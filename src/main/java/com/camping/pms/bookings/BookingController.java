@@ -6,7 +6,7 @@ import com.camping.pms.accommodations.PricingService;
 import com.camping.pms.bookings.dto.BookingDto;
 import com.camping.pms.customers.Customer;
 import com.camping.pms.customers.CustomerRepository;
-import com.camping.pms.security.CurrentUserService;
+import com.camping.pms.CurrentUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;

@@ -20,6 +20,11 @@ public class BookingDto {
     private Integer children;
     private BigDecimal totalPrice;
     private String status;
+    private BigDecimal depositAmount;
+    private String depositStatus;
+    private LocalDate depositReturnedDate;
+    private BigDecimal depositDeduction;
+    private String depositDeductionReason;
 
     public static BookingDto from(Booking booking) {
         BookingDto dto = new BookingDto();
@@ -32,6 +37,11 @@ public class BookingDto {
         dto.setChildren(booking.getChildren());
         dto.setTotalPrice(booking.getTotalPrice());
         dto.setStatus(booking.getStatus());
+        dto.setDepositAmount(booking.getDepositAmount());
+        dto.setDepositStatus(booking.getDepositStatus());
+        dto.setDepositReturnedDate(booking.getDepositReturnedDate());
+        dto.setDepositDeduction(booking.getDepositDeduction());
+        dto.setDepositDeductionReason(booking.getDepositDeductionReason());
         return dto;
     }
 }

@@ -23,6 +23,11 @@ export interface Booking {
   children: number;
   totalPrice: number;
   status: string;
+  depositAmount: number;
+  depositStatus: string;
+  depositReturnedDate: string | null;
+  depositDeduction: number;
+  depositDeductionReason: string | null;
 }
 
 export interface CreateBookingRequest {
@@ -58,5 +63,19 @@ export class BookingService {
 
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  holdDeposit(id: string, amount: number): Observable<Booking> {
+    return this.http.patch<Booking>(`${this.apiUrl}/${id}/deposit/hold?amount=${amount}`, {});
+  }
+
+  returnDeposit(id: string): Observable<Booking> {
+    return this.http.patch<Booking>(`${this.apiUrl}/${id}/deposit/return`, {});
+  }
+
+  partialRetainDeposit(id: string, deduction: number, reason: string): Observable<Booking> {
+    return this.http.patch<Booking>(
+      `${this.apiUrl}/${id}/deposit/partial-retain?deduction=${deduction}&reason=${encodeURIComponent(reason)}`, {}
+    );
   }
 }

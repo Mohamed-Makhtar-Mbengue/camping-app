@@ -27,6 +27,7 @@ public class Accommodation {
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
     private String description;
+    private BigDecimal depositRequired;
 
     @JsonIgnore
     @OneToMany(mappedBy = "accommodation", cascade = CascadeType.ALL)

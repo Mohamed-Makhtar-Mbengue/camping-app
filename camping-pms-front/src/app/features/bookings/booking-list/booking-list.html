@@ -60,6 +60,22 @@
                   <span>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</span>
                 </div>
               }
+              @if (authService.isAdmin()) {
+                <div class="deposit-section">
+                  <div class="detail-row">
+                    <mat-icon>security</mat-icon>
+                    <span>Caution : {{ booking.depositAmount }}€</span>
+                    <mat-chip [color]="getDepositStatusColor(booking.depositStatus)" highlighted>
+                      {{ getDepositStatusLabel(booking.depositStatus) }}
+                    </mat-chip>
+                  </div>
+                  @if (booking.depositStatus === 'PARTIALLY_RETAINED') {
+                    <p class="deduction-info">
+                      Retenu : {{ booking.depositDeduction }}€ — {{ booking.depositDeductionReason }}
+                    </p>
+                  }
+                </div>
+              }
             </div>
           </mat-card-content>
 
@@ -77,6 +93,19 @@
             @if (booking.status !== 'CONFIRMED') {
               <button mat-icon-button color="warn" (click)="delete(booking.id)">
                 <mat-icon>delete</mat-icon>
+              </button>
+            }
+            @if (authService.isAdmin() && booking.status === 'CONFIRMED' && booking.depositStatus === 'PENDING') {
+              <button mat-stroked-button color="accent" (click)="holdDeposit(booking.id)">
+                <mat-icon>lock</mat-icon> Encaisser caution
+              </button>
+            }
+            @if (authService.isAdmin() && booking.depositStatus === 'HELD') {
+              <button mat-stroked-button color="primary" (click)="returnDeposit(booking.id)">
+                <mat-icon>check</mat-icon> Rembourser
+              </button>
+              <button mat-stroked-button color="warn" (click)="partialRetainDeposit(booking.id)">
+                <mat-icon>remove_circle</mat-icon> Retenir une partie
               </button>
             }
           </mat-card-actions>

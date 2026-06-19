@@ -1,4 +1,4 @@
-package com.camping.pms.security;
+package com.camping.pms;
 
 import com.camping.pms.customers.Customer;
 import com.camping.pms.customers.CustomerRepository;
