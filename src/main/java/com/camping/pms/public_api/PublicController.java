@@ -2,6 +2,8 @@ package com.camping.pms.public_api;
 
 import com.camping.pms.accommodations.Accommodation;
 import com.camping.pms.accommodations.AccommodationRepository;
+import com.camping.pms.accommodations.AcsiService;
+import com.camping.pms.accommodations.PricingService;
 import com.camping.pms.accommodations.dto.AccommodationDto;
 import com.camping.pms.bookings.Booking;
 import com.camping.pms.bookings.BookingRepository;
@@ -29,15 +31,21 @@ public class PublicController {
     private final BookingRepository bookingRepository;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PricingService pricingService;
+    private final AcsiService acsiService;
 
     public PublicController(AccommodationRepository accommodationRepository,
                             BookingRepository bookingRepository,
                             CustomerRepository customerRepository,
-                            PasswordEncoder passwordEncoder) {
+                            PasswordEncoder passwordEncoder,
+                            PricingService pricingService,
+                            AcsiService acsiService) {
         this.accommodationRepository = accommodationRepository;
         this.bookingRepository = bookingRepository;
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
+        this.pricingService = pricingService;
+        this.acsiService = acsiService;
     }
 
     @GetMapping("/accommodations")
@@ -82,6 +90,11 @@ public class PublicController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Hébergement non disponible");
         }
 
+        long nights = ChronoUnit.DAYS.between(request.startDate(), request.endDate());
+        if (nights <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Les dates sont invalides");
+        }
+
         // Créer ou trouver le customer
         Customer customer = customerRepository.findByEmail(request.email())
                 .orElseGet(() -> {
@@ -94,8 +107,29 @@ public class PublicController {
                     return customerRepository.save(c);
                 });
 
-        long nights = ChronoUnit.DAYS.between(request.startDate(), request.endDate());
-        BigDecimal total = acc.getBasePrice().multiply(BigDecimal.valueOf(nights));
+        // Calcul du prix avec gestion ACSI
+        BigDecimal total;
+        boolean acsiApplied = false;
+        BigDecimal acsiDiscount = BigDecimal.ZERO;
+
+        boolean wantsAcsi = request.hasAcsiCard() && acsiService.isEligible(request.startDate(), request.endDate());
+
+        if (wantsAcsi) {
+            BigDecimal normalPrice = pricingService.calculatePrice(
+                    request.accommodationId(), request.startDate(), request.endDate());
+            if (normalPrice.compareTo(BigDecimal.ZERO) == 0) {
+                normalPrice = acc.getBasePrice().multiply(BigDecimal.valueOf(nights));
+            }
+            total = acsiService.calculateAcsiPrice(request.startDate(), request.endDate());
+            acsiDiscount = normalPrice.subtract(total);
+            acsiApplied = true;
+        } else {
+            total = pricingService.calculatePrice(
+                    request.accommodationId(), request.startDate(), request.endDate());
+            if (total.compareTo(BigDecimal.ZERO) == 0) {
+                total = acc.getBasePrice().multiply(BigDecimal.valueOf(nights));
+            }
+        }
 
         Booking booking = new Booking();
         booking.setAccommodation(acc);
@@ -106,6 +140,11 @@ public class PublicController {
         booking.setChildren(request.children());
         booking.setTotalPrice(total);
         booking.setStatus("PENDING");
+        booking.setAcsiApplied(acsiApplied);
+        booking.setAcsiDiscount(acsiDiscount);
+        booking.setDepositAmount(acc.getDepositRequired() != null ? acc.getDepositRequired() : BigDecimal.valueOf(150));
+        booking.setDepositStatus("PENDING");
+
         bookingRepository.save(booking);
 
         return Map.of(
@@ -115,7 +154,9 @@ public class PublicController {
             "startDate", request.startDate(),
             "endDate", request.endDate(),
             "nights", nights,
-            "customerEmail", customer.getEmail()
+            "customerEmail", customer.getEmail(),
+            "acsiApplied", acsiApplied,
+            "acsiDiscount", acsiDiscount
         );
     }
 }

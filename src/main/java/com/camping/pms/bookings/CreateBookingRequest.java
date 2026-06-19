@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public record CreateBookingRequest(
-        UUID accommodationId,
-        UUID customerId,
-        LocalDate startDate,
-        LocalDate endDate,
-        int adults,
-        int children
+    UUID accommodationId,
+    LocalDate startDate,
+    LocalDate endDate,
+    int adults,
+    int children,
+    boolean hasAcsiCard
 ) {}

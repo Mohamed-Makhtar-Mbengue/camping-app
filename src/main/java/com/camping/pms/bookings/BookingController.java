@@ -2,6 +2,7 @@ package com.camping.pms.bookings;
 
 import com.camping.pms.accommodations.Accommodation;
 import com.camping.pms.accommodations.AccommodationRepository;
+import com.camping.pms.accommodations.AcsiService;
 import com.camping.pms.accommodations.PricingService;
 import com.camping.pms.bookings.dto.BookingDto;
 import com.camping.pms.customers.Customer;
@@ -27,18 +28,22 @@ public class BookingController {
     private final CurrentUserService currentUserService;
     private final PricingService pricingService;
     private final EmailService emailService;
+    private final AcsiService acsiService;
 
     public BookingController(BookingRepository bookingRepository,
                              AccommodationRepository accommodationRepository,
                              CustomerRepository customerRepository,
                              CurrentUserService currentUserService,
-                             PricingService pricingService, EmailService emailService) {
+                             PricingService pricingService,
+                             EmailService emailService,
+                             AcsiService acsiService) {
         this.bookingRepository = bookingRepository;
         this.accommodationRepository = accommodationRepository;
         this.customerRepository = customerRepository;
         this.currentUserService = currentUserService;
         this.pricingService = pricingService;
         this.emailService = emailService;
+        this.acsiService = acsiService;
     }
 
     @GetMapping
@@ -84,16 +89,27 @@ public class BookingController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Hébergement non disponible pour ces dates");
         }
 
-        // Calcul prix dynamique selon saison
-        BigDecimal total = pricingService.calculatePrice(
-                request.accommodationId(),
-                request.startDate(),
-                request.endDate()
-        );
+        BigDecimal total;
+        boolean acsiApplied = false;
+        BigDecimal acsiDiscount = BigDecimal.ZERO;
 
-        // Si pas de saison définie, utilise le basePrice
-        if (total.compareTo(BigDecimal.ZERO) == 0) {
-            total = acc.getBasePrice().multiply(BigDecimal.valueOf(nights));
+        boolean wantsAcsi = request.hasAcsiCard() && acsiService.isEligible(request.startDate(), request.endDate());
+
+        if (wantsAcsi) {
+            BigDecimal normalPrice = pricingService.calculatePrice(
+                    request.accommodationId(), request.startDate(), request.endDate());
+            if (normalPrice.compareTo(BigDecimal.ZERO) == 0) {
+                normalPrice = acc.getBasePrice().multiply(BigDecimal.valueOf(nights));
+            }
+            total = acsiService.calculateAcsiPrice(request.startDate(), request.endDate());
+            acsiDiscount = normalPrice.subtract(total);
+            acsiApplied = true;
+        } else {
+            total = pricingService.calculatePrice(
+                    request.accommodationId(), request.startDate(), request.endDate());
+            if (total.compareTo(BigDecimal.ZERO) == 0) {
+                total = acc.getBasePrice().multiply(BigDecimal.valueOf(nights));
+            }
         }
 
         Booking booking = new Booking();
@@ -105,6 +121,10 @@ public class BookingController {
         booking.setChildren(request.children());
         booking.setTotalPrice(total);
         booking.setStatus("PENDING");
+        booking.setAcsiApplied(acsiApplied);
+        booking.setAcsiDiscount(acsiDiscount);
+        booking.setDepositAmount(acc.getDepositRequired() != null ? acc.getDepositRequired() : BigDecimal.valueOf(150));
+        booking.setDepositStatus("PENDING");
 
         return BookingDto.from(bookingRepository.save(booking));
     }
@@ -116,12 +136,10 @@ public class BookingController {
         booking.setStatus(status);
         Booking saved = bookingRepository.save(booking);
 
-        // Envoie l'email si confirmation
         if ("CONFIRMED".equals(status)) {
             try {
                 emailService.sendConfirmationEmail(saved);
             } catch (Exception e) {
-                // Log l'erreur mais ne bloque pas la confirmation
                 System.err.println("Erreur envoi email: " + e.getMessage());
             }
         }

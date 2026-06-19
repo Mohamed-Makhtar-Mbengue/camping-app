@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,6 +19,7 @@ import { Accommodation } from '../../../core/services/accommodation.service';
   selector: 'app-booking-wizard',
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     MatStepperModule,
     MatFormFieldModule,
@@ -45,6 +46,13 @@ export class BookingWizard implements OnInit {
   nights = 0;
   totalPrice = 0;
   minDate = new Date();
+
+  hasAcsiCard = false;
+  acsiChecked = false;
+  acsiEligible = false;
+  acsiPrice = 0;
+  acsiDiscount = 0;
+  normalPrice = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -86,6 +94,8 @@ export class BookingWizard implements OnInit {
 
     this.datesForm.valueChanges.subscribe(() => {
       this.calculatePrice();
+      this.availabilityChecked = false;
+      this.acsiChecked = false;
       this.cdr.detectChanges();
     });
   }
@@ -105,14 +115,38 @@ export class BookingWizard implements OnInit {
     this.loading = true;
 
     const { startDate, endDate } = this.datesForm.value;
-    this.publicService.checkAvailability(
-      this.accommodation.id,
-      this.formatDate(startDate),
-      this.formatDate(endDate)
-    ).subscribe({
+    const start = this.formatDate(startDate);
+    const end = this.formatDate(endDate);
+
+    this.publicService.checkAvailability(this.accommodation.id, start, end).subscribe({
       next: result => {
         this.isAvailable = result.available;
         this.availabilityChecked = true;
+
+        if (this.isAvailable && this.hasAcsiCard) {
+          this.checkAcsi(start, end);
+        } else {
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+      },
+      error: () => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  checkAcsi(start: string, end: string): void {
+    this.publicService.checkAcsiEligibility(start, end).subscribe({
+      next: result => {
+        this.acsiChecked = true;
+        this.acsiEligible = result.eligible;
+        this.normalPrice = this.totalPrice;
+        if (result.eligible) {
+          this.acsiPrice = result.acsiPrice;
+          this.acsiDiscount = this.normalPrice - this.acsiPrice;
+        }
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -133,6 +167,7 @@ export class BookingWizard implements OnInit {
       endDate: this.formatDate(this.datesForm.value.endDate),
       adults: this.datesForm.value.adults,
       children: this.datesForm.value.children,
+      hasAcsiCard: this.hasAcsiCard,
       ...this.personalForm.value
     };
 

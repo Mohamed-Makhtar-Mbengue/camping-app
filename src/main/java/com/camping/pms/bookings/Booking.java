@@ -34,7 +34,6 @@ public class Booking {
     private BigDecimal totalPrice;
     private String status;
 
-    // Nouvelles infos
     private String address;
     private String city;
     private String postalCode;
@@ -46,9 +45,13 @@ public class Booking {
     private String vehicleType;
     private BigDecimal supplementsTotal;
     private String notes;
+
     private BigDecimal depositAmount;
     private String depositStatus;
     private LocalDate depositReturnedDate;
     private BigDecimal depositDeduction;
     private String depositDeductionReason;
+
+    private Boolean acsiApplied;
+    private BigDecimal acsiDiscount;
 }

@@ -12,5 +12,6 @@ public record PublicBookingRequest(
     String firstName,
     String lastName,
     String email,
-    String phone
+    String phone,
+    boolean hasAcsiCard
 ) {}

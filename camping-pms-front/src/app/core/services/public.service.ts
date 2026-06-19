@@ -26,6 +26,11 @@ export interface BookingConfirmation {
   customerEmail: string;
 }
 
+export interface AcsiCheckResult {
+  eligible: boolean;
+  acsiPrice: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PublicService {
 
@@ -55,5 +60,12 @@ export class PublicService {
 
   createBooking(request: PublicBookingRequest): Observable<BookingConfirmation> {
     return this.http.post<BookingConfirmation>(`${this.apiUrl}/bookings`, request);
+  }
+
+  checkAcsiEligibility(startDate: string, endDate: string): Observable<AcsiCheckResult> {
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+    return this.http.get<AcsiCheckResult>(`${this.apiUrl}/acsi/check`, { params });
   }
 }

@@ -40,6 +40,13 @@
             </mat-form-field>
           </div>
 
+          <div class="acsi-checkbox">
+            <label>
+              <input type="checkbox" [(ngModel)]="hasAcsiCard" [ngModelOptions]="{standalone: true}">
+              🎫 J'ai une CampingCard ACSI
+            </label>
+          </div>
+
           @if (nights > 0) {
             <div class="price-summary">
               <span>{{ nights }} nuit(s) × {{ accommodation.basePrice }}€</span>
@@ -52,6 +59,24 @@
               <mat-icon>{{ isAvailable ? 'check_circle' : 'cancel' }}</mat-icon>
               {{ isAvailable ? 'Disponible pour ces dates !' : 'Non disponible pour ces dates' }}
             </div>
+          }
+
+          @if (availabilityChecked && hasAcsiCard && acsiChecked) {
+            @if (acsiEligible) {
+              <div class="acsi-result eligible">
+                <mat-icon>local_offer</mat-icon>
+                <div>
+                  <strong>CampingCard ACSI acceptée pour ces dates !</strong>
+                  <p>Prix ACSI : {{ acsiPrice }}€ au lieu de {{ normalPrice }}€
+                     (économie de {{ acsiDiscount }}€)</p>
+                </div>
+              </div>
+            } @else {
+              <div class="acsi-result not-eligible">
+                <mat-icon>info</mat-icon>
+                <span>La CampingCard ACSI n'est pas valable pour ces dates. Tarif normal appliqué.</span>
+              </div>
+            }
           }
 
           <div class="step-actions">
@@ -111,7 +136,9 @@
         <form [formGroup]="paymentForm" class="step-form">
           <div class="payment-summary">
             <mat-icon>lock</mat-icon>
-            <span>Paiement sécurisé — Total : <strong>{{ totalPrice }}€</strong></span>
+            <span>Paiement sécurisé — Total :
+              <strong>{{ (acsiEligible && hasAcsiCard) ? acsiPrice : totalPrice }}€</strong>
+            </span>
           </div>
 
           <mat-form-field appearance="outline" class="full-width">
@@ -147,7 +174,7 @@
                     (click)="confirm()"
                     [disabled]="paymentForm.invalid || loading">
               @if (loading) { <mat-spinner diameter="20" /> }
-              @else { Confirmer et payer {{ totalPrice }}€ }
+              @else { Confirmer et payer {{ (acsiEligible && hasAcsiCard) ? acsiPrice : totalPrice }}€ }
             </button>
           </div>
         </form>

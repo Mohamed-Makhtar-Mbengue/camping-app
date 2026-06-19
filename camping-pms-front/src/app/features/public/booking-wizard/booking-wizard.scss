@@ -36,6 +36,27 @@
 
     .full-width { grid-column: 1 / -1; }
 
+    .acsi-checkbox {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        color: #555;
+
+        input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+        }
+      }
+    }
+
     .price-summary {
       display: flex;
       justify-content: space-between;
@@ -69,6 +90,30 @@
       background: #ffebee;
       color: #c62828;
       mat-icon { color: #c62828; }
+    }
+
+    .acsi-result {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+
+      mat-icon { flex-shrink: 0; }
+      p { margin: 4px 0 0; font-size: 14px; }
+
+      &.eligible {
+        background: #e8f5e9;
+        color: #2e7d32;
+        mat-icon { color: #2e7d32; }
+      }
+
+      &.not-eligible {
+        background: #fff3e0;
+        color: #e65100;
+        mat-icon { color: #e65100; }
+      }
     }
 
     .payment-summary {
