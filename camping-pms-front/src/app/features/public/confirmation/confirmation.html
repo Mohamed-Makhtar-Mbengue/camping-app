@@ -7,7 +7,11 @@
     </div>
 
     <h1>Réservation confirmée ! 🎉</h1>
-    <p class="subtitle">Un email de confirmation a été envoyé à {{ confirmation.customerEmail }}</p>
+    <p class="subtitle">
+      Un email de confirmation sera envoyé à
+      <strong>{{ confirmation.customerEmail }}</strong>
+      après validation par notre équipe.
+    </p>
 
     <mat-card class="confirmation-card">
       <mat-card-content>
@@ -16,32 +20,60 @@
 
         <div class="details">
           <div class="detail-row">
+            <span class="label">Référence</span>
+            <span class="value ref">{{ confirmation.bookingId }}</span>
+          </div>
+          <div class="detail-row">
             <span class="label">Hébergement</span>
             <span class="value">{{ confirmation.accommodation }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Arrivée</span>
-            <span class="value">{{ confirmation.startDate | date:'dd MMMM yyyy':'':'fr' }}</span>
+            <span class="value">{{ confirmation.startDate | date:'dd/MM/yyyy' }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Départ</span>
-            <span class="value">{{ confirmation.endDate | date:'dd MMMM yyyy':'':'fr' }}</span>
+            <span class="value">{{ confirmation.endDate | date:'dd/MM/yyyy' }}</span>
           </div>
           <div class="detail-row">
             <span class="label">Durée</span>
             <span class="value">{{ getNights() }} nuit(s)</span>
           </div>
+          @if (confirmation.acsiApplied) {
+            <div class="detail-row acsi">
+              <span class="label">🎫 Réduction ACSI</span>
+              <span class="value discount">-{{ confirmation.acsiDiscount }}€</span>
+            </div>
+          }
           <mat-divider />
           <div class="detail-row total">
-            <span class="label">Total payé</span>
+            <span class="label">Total</span>
             <span class="value price">{{ confirmation.totalPrice }}€</span>
           </div>
         </div>
       </mat-card-content>
     </mat-card>
 
+    <div class="info-box">
+      <mat-icon>info</mat-icon>
+      <p>
+        Votre réservation est en attente de confirmation par notre équipe.
+        Vous recevrez votre <strong>bon d'échange officiel</strong> par email
+        dès validation. En attendant, téléchargez votre récapitulatif ci-dessous.
+      </p>
+    </div>
+
     <div class="actions">
-      <a mat-raised-button color="primary" routerLink="/">
+      <button mat-raised-button color="primary"
+              (click)="downloadPdf()" [disabled]="downloading">
+        @if (downloading) {
+          <mat-spinner diameter="20" />
+        } @else {
+          <mat-icon>download</mat-icon>
+          Télécharger mon bon d'échange (PDF)
+        }
+      </button>
+      <a mat-stroked-button routerLink="/">
         <mat-icon>home</mat-icon> Retour à l'accueil
       </a>
     </div>

@@ -9,10 +9,12 @@ import com.camping.pms.bookings.Booking;
 import com.camping.pms.bookings.BookingRepository;
 import com.camping.pms.customers.Customer;
 import com.camping.pms.customers.CustomerRepository;
+import com.camping.pms.email.PdfService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,19 +35,22 @@ public class PublicController {
     private final PasswordEncoder passwordEncoder;
     private final PricingService pricingService;
     private final AcsiService acsiService;
+    private final PdfService pdfService;
 
     public PublicController(AccommodationRepository accommodationRepository,
                             BookingRepository bookingRepository,
                             CustomerRepository customerRepository,
                             PasswordEncoder passwordEncoder,
                             PricingService pricingService,
-                            AcsiService acsiService) {
+                            AcsiService acsiService,
+                            PdfService pdfService) {
         this.accommodationRepository = accommodationRepository;
         this.bookingRepository = bookingRepository;
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
         this.pricingService = pricingService;
         this.acsiService = acsiService;
+        this.pdfService = pdfService;
     }
 
     @GetMapping("/accommodations")
@@ -76,6 +81,19 @@ public class PublicController {
         return Map.of("available", available);
     }
 
+    @GetMapping("/bookings/{id}/pdf")
+    public ResponseEntity<byte[]> downloadBonEchange(@PathVariable UUID id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        byte[] pdf = pdfService.generateBonEchange(booking);
+
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=bon-echange-" + id + ".pdf")
+                .body(pdf);
+    }
+
     @PostMapping("/bookings")
     public Map<String, Object> createPublicBooking(@RequestBody PublicBookingRequest request) {
         Accommodation acc = accommodationRepository.findById(request.accommodationId())
@@ -95,7 +113,6 @@ public class PublicController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Les dates sont invalides");
         }
 
-        // Créer ou trouver le customer
         Customer customer = customerRepository.findByEmail(request.email())
                 .orElseGet(() -> {
                     Customer c = new Customer();
@@ -107,12 +124,12 @@ public class PublicController {
                     return customerRepository.save(c);
                 });
 
-        // Calcul du prix avec gestion ACSI
         BigDecimal total;
         boolean acsiApplied = false;
         BigDecimal acsiDiscount = BigDecimal.ZERO;
 
-        boolean wantsAcsi = request.hasAcsiCard() && acsiService.isEligible(request.startDate(), request.endDate());
+        boolean wantsAcsi = request.hasAcsiCard() &&
+                acsiService.isEligible(request.startDate(), request.endDate());
 
         if (wantsAcsi) {
             BigDecimal normalPrice = pricingService.calculatePrice(
@@ -142,7 +159,8 @@ public class PublicController {
         booking.setStatus("PENDING");
         booking.setAcsiApplied(acsiApplied);
         booking.setAcsiDiscount(acsiDiscount);
-        booking.setDepositAmount(acc.getDepositRequired() != null ? acc.getDepositRequired() : BigDecimal.valueOf(150));
+        booking.setDepositAmount(acc.getDepositRequired() != null ?
+                acc.getDepositRequired() : BigDecimal.valueOf(150));
         booking.setDepositStatus("PENDING");
 
         bookingRepository.save(booking);

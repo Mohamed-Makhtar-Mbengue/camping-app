@@ -54,4 +54,8 @@ public class Booking {
 
     private Boolean acsiApplied;
     private BigDecimal acsiDiscount;
+
+    private String paymentIntentId;
+    private String paymentStatus;
+    private BigDecimal depositPaidAmount;
 }

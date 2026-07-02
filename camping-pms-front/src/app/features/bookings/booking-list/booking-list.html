@@ -95,9 +95,14 @@
                 <mat-icon>delete</mat-icon>
               </button>
             }
-            @if (authService.isAdmin() && booking.status === 'CONFIRMED' && booking.depositStatus === 'PENDING') {
-              <button mat-stroked-button color="accent" (click)="holdDeposit(booking.id)">
-                <mat-icon>lock</mat-icon> Encaisser caution
+            @if (authService.isAdmin() && booking.status === 'PENDING') {
+              <button mat-stroked-button color="primary"
+                      (click)="openAssignmentDialog(booking)">
+                <mat-icon>assignment</mat-icon> Assigner & Confirmer
+              </button>
+              <button mat-stroked-button color="warn"
+                      (click)="updateStatus(booking.id, 'CANCELLED')">
+                <mat-icon>close</mat-icon> Annuler
               </button>
             }
             @if (authService.isAdmin() && booking.depositStatus === 'HELD') {

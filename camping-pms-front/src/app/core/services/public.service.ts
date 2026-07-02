@@ -68,4 +68,11 @@ export class PublicService {
       .set('endDate', endDate);
     return this.http.get<AcsiCheckResult>(`${this.apiUrl}/acsi/check`, { params });
   }
+
+  downloadBonEchange(bookingId: string): Observable<Blob> {
+  return this.http.get(
+    `${this.apiUrl}/bookings/${bookingId}/pdf`,
+    { responseType: 'blob' }
+  );
+  }
 }

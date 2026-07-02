@@ -11,6 +11,7 @@ import { Navbar } from '../../../shared/components/navbar/navbar';
 import { BookingService, Booking } from '../../../core/services/booking';
 import { AuthService } from '../../../core/services/auth.service';
 import { BookingForm } from '../booking-form/booking-form';
+import { AssignmentDialog } from '../assignment-dialog/assignment-dialog';
 
 @Component({
   selector: 'app-booking-list',
@@ -70,10 +71,22 @@ export class BookingList implements OnInit {
     });
   }
 
-  updateStatus(id: string, status: string): void {
-    this.bookingService.updateStatus(id, status).subscribe({
-      next: () => {
-        this.snackBar.open('Statut mis à jour', 'Fermer', { duration: 3000 });
+  openAssignmentDialog(booking: Booking): void {
+  const dialogRef = this.dialog.open(AssignmentDialog, {
+    width: '600px',
+    data: {
+      bookingId: booking.id,
+      accommodationName: booking.accommodation.name,
+      startDate: booking.startDate,
+      endDate: booking.endDate,
+      adults: booking.adults,
+      children: booking.children
+    }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.snackBar.open('Réservation confirmée — email envoyé au client', 'Fermer', { duration: 4000 });
         this.loadBookings();
       }
     });

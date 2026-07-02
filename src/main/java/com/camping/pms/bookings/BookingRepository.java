@@ -1,5 +1,6 @@
 package com.camping.pms.bookings;
 
+import com.camping.pms.accommodations.Accommodation;
 import com.camping.pms.customers.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -51,4 +52,23 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
         ORDER BY totalBookings DESC
     """)
     List<Map<String, Object>> countBookingsByAccommodation();
+
+    @Query("""
+        SELECT a FROM Accommodation a
+        WHERE a.category = :category
+        AND a.capacity >= :minCapacity
+        AND a.id NOT IN (
+            SELECT b.accommodation.id FROM Booking b
+            WHERE b.status != 'CANCELLED'
+            AND b.startDate < :endDate
+            AND b.endDate > :startDate
+        )
+        ORDER BY a.capacity ASC
+    """)
+    List<Accommodation> findAvailableByCategory(
+        @Param("category") String category,
+        @Param("minCapacity") int minCapacity,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
 }

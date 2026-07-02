@@ -5,8 +5,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PublicNavbar } from '../../../shared/components/public-navbar/public-navbar';
-import { BookingConfirmation } from '../../../core/services/public.service';
+import { PublicService, BookingConfirmation } from '../../../core/services/public.service';
 
 @Component({
   selector: 'app-confirmation',
@@ -17,6 +18,7 @@ import { BookingConfirmation } from '../../../core/services/public.service';
     MatCardModule,
     MatIconModule,
     MatDividerModule,
+    MatProgressSpinnerModule,
     PublicNavbar
   ],
   templateUrl: './confirmation.html',
@@ -24,9 +26,11 @@ import { BookingConfirmation } from '../../../core/services/public.service';
 })
 export class Confirmation implements OnInit {
   confirmation: BookingConfirmation | null = null;
+  downloading = false;
 
   constructor(
     private router: Router,
+    private publicService: PublicService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -48,5 +52,27 @@ export class Confirmation implements OnInit {
     const start = new Date(this.confirmation.startDate);
     const end = new Date(this.confirmation.endDate);
     return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  downloadPdf(): void {
+    if (!this.confirmation) return;
+    this.downloading = true;
+
+    this.publicService.downloadBonEchange(this.confirmation.bookingId).subscribe({
+      next: blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `bon-echange-${this.confirmation!.bookingId}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.downloading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.downloading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 }
