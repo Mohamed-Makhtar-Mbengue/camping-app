@@ -1,4 +1,4 @@
-# 🏕️ Camping PMS — Domaine de Léveno
+# 🏕️ Camping PMS — Dakar
 
 Application de gestion de camping (Property Management System) complète, développée avec **Spring Boot 4** (backend) et **Angular 21** (frontend).
 
