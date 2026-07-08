@@ -337,7 +337,7 @@ src/assets/
 
 ## 📄 Licence
 
-Ce projet est développé pour le **Domaine de Léveno Camping Village ⭐⭐⭐⭐**.
+Ce projet est développé pour le **PMS Camping Dakar ⭐⭐⭐⭐**.
 
 ---
 
