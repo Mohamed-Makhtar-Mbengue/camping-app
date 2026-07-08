@@ -103,6 +103,15 @@ export class BookingList implements OnInit {
     }
   }
 
+  updateStatus(id: string, status: string): void {
+    this.bookingService.updateStatus(id, status).subscribe({
+      next: () => {
+        this.snackBar.open('Statut mis à jour', 'Fermer', { duration: 3000 });
+        this.loadBookings();
+      }
+    });
+  }
+
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
       'PENDING': 'accent',

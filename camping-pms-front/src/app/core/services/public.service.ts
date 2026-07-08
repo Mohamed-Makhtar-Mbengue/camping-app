@@ -24,6 +24,8 @@ export interface BookingConfirmation {
   endDate: string;
   nights: number;
   customerEmail: string;
+  acsiApplied?: boolean;
+  acsiDiscount?: number;
 }
 
 export interface AcsiCheckResult {

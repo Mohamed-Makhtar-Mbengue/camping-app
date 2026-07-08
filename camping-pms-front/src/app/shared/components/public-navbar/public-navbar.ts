@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ThemeService } from '../../../core/services/theme.service';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-public-navbar',
@@ -13,11 +16,21 @@ import { ThemeService } from '../../../core/services/theme.service';
     RouterLink,
     MatToolbarModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatMenuModule,
+    TranslatePipe
   ],
   templateUrl: './public-navbar.html',
   styleUrl: './public-navbar.scss'
 })
-export class PublicNavbar {
-  constructor(public themeService: ThemeService) {}
+export class PublicNavbar implements OnInit {
+  constructor(
+    public themeService: ThemeService,
+    public langService: LanguageService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.cdr.detectChanges();
+  }
 }

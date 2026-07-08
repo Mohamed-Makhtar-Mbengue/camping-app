@@ -7,12 +7,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { PublicNavbar } from '../../../shared/components/public-navbar/public-navbar';
 import { PublicService } from '../../../core/services/public.service';
+import { LanguageService } from '../../../core/services/language.service';
 import { Accommodation } from '../../../core/services/accommodation.service';
 
 @Component({
   selector: 'app-home',
+  standalone: true,
   imports: [
     CommonModule,
     RouterLink,
@@ -22,6 +25,7 @@ import { Accommodation } from '../../../core/services/accommodation.service';
     MatChipsModule,
     MatPaginatorModule,
     MatProgressSpinnerModule,
+    TranslatePipe,
     PublicNavbar
   ],
   templateUrl: './home.html',
@@ -37,22 +41,28 @@ export class Home implements OnInit, OnDestroy {
   heroImages = [
     { url: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1600&h=900&fit=crop', label: 'Piscine' },
     { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&h=900&fit=crop', label: 'Restaurant' },
-    { url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1600&h=900&fit=crop', label: 'Espace bien-être' },
-    { url: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1600&h=900&fit=crop', label: 'Terrain multisport' },
+    { url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1600&h=900&fit=crop', label: 'Bien-être' },
+    { url: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=1600&h=900&fit=crop', label: 'Multisport' },
     { url: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=1600&h=900&fit=crop', label: 'Salle de sport' },
-    { url: 'https://images.unsplash.com/photo-1560253787-29c50689bbe5?w=1600&h=900&fit=crop', label: 'Espace jeux gonflables' }
+    { url: 'https://images.unsplash.com/photo-1560253787-29c50689bbe5?w=1600&h=900&fit=crop', label: 'Jeux gonflables' }
   ];
   currentHeroIndex = 0;
   private heroInterval: any;
 
   constructor(
     private publicService: PublicService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translate: TranslateService,
+    public langService: LanguageService
   ) {}
 
   ngOnInit(): void {
     this.loadAccommodations();
     this.startHeroCarousel();
+
+    // Langue par défaut
+    const saved = localStorage.getItem('lang') || 'fr';
+    this.translate.use(saved);
   }
 
   ngOnDestroy(): void {
@@ -94,8 +104,13 @@ export class Home implements OnInit, OnDestroy {
 
   getTypeIcon(type: string): string {
     const icons: Record<string, string> = {
-      'TENTE': '⛺', 'MOBIL_HOME': '🏠', 'CHALET': '🏔️',
-      'BUNGALOW': '🏡', 'TIPI': '🛖', 'CABANE': '🌳', 'EMPLACEMENT': '🚐'
+      'TENTE': '⛺',
+      'MOBIL_HOME': '🏠',
+      'CHALET': '🏔️',
+      'BUNGALOW': '🏡',
+      'TIPI': '🛖',
+      'CABANE': '🌳',
+      'EMPLACEMENT': '🚐'
     };
     return icons[type] || '🏕️';
   }

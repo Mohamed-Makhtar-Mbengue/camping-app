@@ -3,30 +3,57 @@
 <!-- Hero Section avec carousel -->
 <section class="hero">
   @for (img of heroImages; track img.url; let i = $index) {
-    <div class="hero-slide" [class.active]="i === currentHeroIndex"
-         [style.background-image]="'url(' + img.url + ')'"></div>
+    <div class="hero-slide"
+         [class.active]="i === currentHeroIndex"
+         [style.background-image]="'url(' + img.url + ')'">
+    </div>
   }
   <div class="hero-overlay"></div>
 
   <div class="hero-content">
-    <h1>🏕️ Bienvenue au Camping</h1>
-    <p>Découvrez nos hébergements et réservez votre séjour en pleine nature</p>
+    <h1>🏕️ {{ 'home.hero_title' | translate }}</h1>
+    <p>{{ 'home.hero_subtitle' | translate }}</p>
+
     <div class="hero-buttons">
       <button mat-raised-button color="primary" (click)="scrollToAccommodations()">
-        <mat-icon>search</mat-icon> Voir les hébergements
+        <mat-icon>search</mat-icon>
+        {{ 'home.see_accommodations' | translate }}
       </button>
     </div>
+
     <div class="hero-features">
-      <div class="feature"><mat-icon>pool</mat-icon><span>Piscine</span></div>
-      <div class="feature"><mat-icon>restaurant</mat-icon><span>Restaurant</span></div>
-      <div class="feature"><mat-icon>spa</mat-icon><span>Bien-être</span></div>
-      <div class="feature"><mat-icon>sports_soccer</mat-icon><span>Multisport</span></div>
-      <div class="feature"><mat-icon>fitness_center</mat-icon><span>Salle de sport</span></div>
-      <div class="feature"><mat-icon>celebration</mat-icon><span>Jeux gonflables</span></div>
+      <div class="feature">
+        <mat-icon>pool</mat-icon>
+        <span>{{ 'home.pool' | translate }}</span>
+      </div>
+      <div class="feature">
+        <mat-icon>restaurant</mat-icon>
+        <span>{{ 'home.restaurant' | translate }}</span>
+      </div>
+      <div class="feature">
+        <mat-icon>spa</mat-icon>
+        <span>{{ 'home.wellness' | translate }}</span>
+      </div>
+      <div class="feature">
+        <mat-icon>sports_soccer</mat-icon>
+        <span>{{ 'home.multisport' | translate }}</span>
+      </div>
+      <div class="feature">
+        <mat-icon>fitness_center</mat-icon>
+        <span>{{ 'home.gym' | translate }}</span>
+      </div>
+      <div class="feature">
+        <mat-icon>celebration</mat-icon>
+        <span>{{ 'home.inflatables' | translate }}</span>
+      </div>
     </div>
+
     <div class="hero-indicators">
       @for (img of heroImages; track img.url; let i = $index) {
-        <span [class.active]="i === currentHeroIndex" (click)="currentHeroIndex = i"></span>
+        <span
+          [class.active]="i === currentHeroIndex"
+          (click)="currentHeroIndex = i">
+        </span>
       }
     </div>
   </div>
@@ -35,30 +62,42 @@
 <!-- Accommodations Section -->
 <section class="accommodations-section" id="accommodations">
   <div class="container">
-    <h2>Nos Hébergements</h2>
-    <p class="subtitle">Choisissez parmi nos différents types d'hébergements</p>
+    <h2>{{ 'home.our_accommodations' | translate }}</h2>
+    <p class="subtitle">{{ 'home.our_accommodations_subtitle' | translate }}</p>
 
     @if (loading) {
-      <div class="loading"><mat-spinner /></div>
+      <div class="loading">
+        <mat-spinner />
+      </div>
     } @else {
       <div class="grid">
         @for (acc of accommodations; track acc.id) {
           <mat-card class="accommodation-card">
-            <img [src]="getPlaceholderImage(acc.type)" [alt]="acc.name" class="card-image">
+            <img [src]="getPlaceholderImage(acc.type)"
+                 [alt]="acc.name"
+                 class="card-image">
             <mat-card-header>
-              <mat-card-title>{{ getTypeIcon(acc.type) }} {{ acc.name }}</mat-card-title>
+              <mat-card-title>
+                {{ getTypeIcon(acc.type) }} {{ acc.name }}
+              </mat-card-title>
               <mat-card-subtitle>{{ acc.type }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
               <p class="description">{{ acc.description }}</p>
               <div class="details">
-                <span><mat-icon>group</mat-icon> {{ acc.capacity }} pers.</span>
-                <span class="price">{{ acc.basePrice }}€ / nuit</span>
+                <span>
+                  <mat-icon>group</mat-icon>
+                  {{ acc.capacity }} {{ 'home.persons' | translate }}
+                </span>
+                <span class="price">
+                  {{ acc.basePrice }}€ {{ 'home.per_night' | translate }}
+                </span>
               </div>
             </mat-card-content>
             <mat-card-actions>
-              <a mat-raised-button color="primary" [routerLink]="['/hebergements', acc.id]">
-                Voir & Réserver
+              <a mat-raised-button color="primary"
+                 [routerLink]="['/hebergements', acc.id]">
+                {{ 'home.book_now' | translate }}
               </a>
             </mat-card-actions>
           </mat-card>

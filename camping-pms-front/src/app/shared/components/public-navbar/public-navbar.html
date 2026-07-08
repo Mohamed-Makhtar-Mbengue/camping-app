@@ -1,12 +1,27 @@
 <mat-toolbar class="public-navbar">
   <a routerLink="/" class="logo">🏕️ Camping PMS</a>
   <span class="spacer"></span>
-  <a mat-button routerLink="/">Accueil</a>
-  <a mat-button routerLink="/hebergements">Hébergements</a>
+  <a mat-button routerLink="/">{{ 'nav.home' | translate }}</a>
+  <a mat-button routerLink="/hebergements">{{ 'nav.accommodations' | translate }}</a>
+
+  <!-- Sélecteur de langue -->
+  <button mat-button [matMenuTriggerFor]="langMenu" class="lang-btn">
+    {{ langService.getCurrentLanguage().flag }}
+    {{ langService.getCurrentLanguage().code.toUpperCase() }}
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+  <mat-menu #langMenu="matMenu">
+    @for (lang of langService.languages; track lang.code) {
+      <button mat-menu-item (click)="langService.setLanguage(lang.code)">
+        {{ lang.flag }} {{ lang.label }}
+      </button>
+    }
+  </mat-menu>
+
   <button mat-icon-button (click)="themeService.toggleTheme()">
     <mat-icon>{{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
   </button>
   <a mat-stroked-button routerLink="/login" class="login-btn">
-    <mat-icon>lock</mat-icon> Connexion
+    <mat-icon>lock</mat-icon> {{ 'nav.login' | translate }}
   </a>
 </mat-toolbar>

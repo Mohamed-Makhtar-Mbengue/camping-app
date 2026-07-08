@@ -76,7 +76,11 @@ interface AccommodationSuggestion {
               (click)="confirm()"
               [disabled]="!selectedId || confirming">
         @if (confirming) { <mat-spinner diameter="20" /> }
-        @else { <mat-icon>check</mat-icon> Confirmer la réservation }
+        @else {
+        <ng-container>
+            <mat-icon>check</mat-icon> Confirmer la réservation
+        </ng-container>
+        }
       </button>
     </mat-dialog-actions>
   `,
