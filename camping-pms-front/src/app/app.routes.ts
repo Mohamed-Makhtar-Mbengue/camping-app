@@ -79,5 +79,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/profile/profile')
       .then(m => m.Profile)
   },
+  {
+  path: 'checkinout',
+  canActivate: [authGuard],
+  loadComponent: () => import('./features/checkinout/checkinout')
+    .then(m => m.Checkinout)
+  },
   { path: '**', redirectTo: '' }
 ];

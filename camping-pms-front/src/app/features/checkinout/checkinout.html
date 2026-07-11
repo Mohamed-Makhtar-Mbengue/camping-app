@@ -1,0 +1,251 @@
+<app-navbar />
+
+<div class="checkinout-container">
+  <div class="page-header">
+    <div class="header-left">
+      <h1>🏕️ Arrivées & Départs</h1>
+      @if (isToday()) {
+        <span class="today-badge">Aujourd'hui</span>
+      }
+    </div>
+
+    <div class="date-picker">
+      <button mat-icon-button (click)="loadToday()" title="Retour à aujourd'hui">
+        <mat-icon>today</mat-icon>
+      </button>
+      <mat-form-field appearance="outline" class="date-field">
+        <mat-label>Choisir une date</mat-label>
+        <input matInput [matDatepicker]="picker"
+               [(ngModel)]="selectedDate"
+               (dateChange)="onDateChange($event.value)">
+        <mat-datepicker-toggle matSuffix [for]="picker" />
+        <mat-datepicker #picker />
+      </mat-form-field>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading"><mat-spinner /></div>
+  } @else if (data) {
+
+    <!-- Résumé du jour -->
+    <div class="summary-cards">
+      <mat-card class="summary-card arrivals">
+        <mat-card-content>
+          <mat-icon>login</mat-icon>
+          <div class="summary-info">
+            <span class="count">{{ data.totalCheckIns }}</span>
+            <span class="label">Arrivée(s)</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card departures">
+        <mat-card-content>
+          <mat-icon>logout</mat-icon>
+          <div class="summary-info">
+            <span class="count">{{ data.totalCheckOuts }}</span>
+            <span class="label">Départ(s)</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card present">
+        <mat-card-content>
+          <mat-icon>people</mat-icon>
+          <div class="summary-info">
+            <span class="count">{{ data.totalPresent }}</span>
+            <span class="label">Présent(s)</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Onglets -->
+    <mat-tab-group animationDuration="200ms" class="tabs">
+
+      <!-- Arrivées -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>login</mat-icon>
+          Arrivées ({{ data.totalCheckIns }})
+        </ng-template>
+
+        @if (data.checkIns.length === 0) {
+          <div class="empty">
+            <mat-icon>event_available</mat-icon>
+            <p>Aucune arrivée prévue ce jour</p>
+          </div>
+        } @else {
+          <div class="bookings-list">
+            @for (booking of data.checkIns; track booking.id) {
+              <mat-card class="booking-row arrival-card">
+                <mat-card-content>
+                  <div class="row-main">
+                    <div class="accommodation-info">
+                      <span class="acc-name">{{ booking.accommodation.name }}</span>
+                      <mat-chip color="primary" highlighted>
+                        {{ booking.accommodation.category }}
+                      </mat-chip>
+                    </div>
+
+                    <div class="client-info">
+                      <mat-icon>person</mat-icon>
+                      <span>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</span>
+                      <span class="phone">{{ booking.customer.phone }}</span>
+                    </div>
+
+                    <div class="stay-info">
+                      <mat-icon>nights_stay</mat-icon>
+                      <span>{{ getNights(booking.startDate, booking.endDate) }} nuit(s)</span>
+                      <span class="dates">
+                        {{ booking.startDate | date:'dd/MM' }}
+                        → {{ booking.endDate | date:'dd/MM' }}
+                      </span>
+                    </div>
+
+                    <div class="persons-info">
+                      <mat-icon>group</mat-icon>
+                      <span>{{ booking.adults }}A + {{ booking.children }}E</span>
+                    </div>
+
+                    <div class="deposit-info"
+                         [class.deposit-pending]="booking.depositStatus === 'PENDING'"
+                         [class.deposit-held]="booking.depositStatus === 'HELD'">
+                      <mat-icon>security</mat-icon>
+                      <span>Caution : {{ booking.depositAmount }}€
+                        @if (booking.depositStatus === 'PENDING') {
+                          <strong>(À encaisser)</strong>
+                        }
+                        @if (booking.depositStatus === 'HELD') {
+                          <strong>(Encaissée ✅)</strong>
+                        }
+                      </span>
+                    </div>
+
+                    <div class="price-info">
+                      <mat-icon>euro</mat-icon>
+                      <span class="price">{{ booking.totalPrice }}€</span>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        }
+      </mat-tab>
+
+      <!-- Départs -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>logout</mat-icon>
+          Départs ({{ data.totalCheckOuts }})
+        </ng-template>
+
+        @if (data.checkOuts.length === 0) {
+          <div class="empty">
+            <mat-icon>event_available</mat-icon>
+            <p>Aucun départ prévu ce jour</p>
+          </div>
+        } @else {
+          <div class="bookings-list">
+            @for (booking of data.checkOuts; track booking.id) {
+              <mat-card class="booking-row departure-card">
+                <mat-card-content>
+                  <div class="row-main">
+                    <div class="accommodation-info">
+                      <span class="acc-name">{{ booking.accommodation.name }}</span>
+                      <mat-chip color="accent" highlighted>
+                        {{ booking.accommodation.category }}
+                      </mat-chip>
+                    </div>
+
+                    <div class="client-info">
+                      <mat-icon>person</mat-icon>
+                      <span>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</span>
+                      <span class="phone">{{ booking.customer.phone }}</span>
+                    </div>
+
+                    <div class="stay-info">
+                      <mat-icon>nights_stay</mat-icon>
+                      <span>{{ getNights(booking.startDate, booking.endDate) }} nuit(s)</span>
+                    </div>
+
+                    <div class="persons-info">
+                      <mat-icon>group</mat-icon>
+                      <span>{{ booking.adults }}A + {{ booking.children }}E</span>
+                    </div>
+
+                    <div class="deposit-info"
+                         [class.deposit-held]="booking.depositStatus === 'HELD'"
+                         [class.deposit-returned]="booking.depositStatus === 'RETURNED'">
+                      <mat-icon>security</mat-icon>
+                      <span>Caution : {{ booking.depositAmount }}€
+                        @if (booking.depositStatus === 'HELD') {
+                          <strong>(À rembourser ⚠️)</strong>
+                        }
+                        @if (booking.depositStatus === 'RETURNED') {
+                          <strong>(Remboursée ✅)</strong>
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        }
+      </mat-tab>
+
+      <!-- Présents -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>people</mat-icon>
+          Présents ({{ data.totalPresent }})
+        </ng-template>
+
+        @if (data.currentlyPresent.length === 0) {
+          <div class="empty">
+            <mat-icon>hotel</mat-icon>
+            <p>Personne sur le camping ce jour</p>
+          </div>
+        } @else {
+          <div class="bookings-list">
+            @for (booking of data.currentlyPresent; track booking.id) {
+              <mat-card class="booking-row present-card">
+                <mat-card-content>
+                  <div class="row-main">
+                    <div class="accommodation-info">
+                      <span class="acc-name">{{ booking.accommodation.name }}</span>
+                      <mat-chip highlighted>{{ booking.accommodation.category }}</mat-chip>
+                    </div>
+
+                    <div class="client-info">
+                      <mat-icon>person</mat-icon>
+                      <span>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</span>
+                      <span class="phone">{{ booking.customer.phone }}</span>
+                    </div>
+
+                    <div class="stay-info">
+                      <mat-icon>event</mat-icon>
+                      <span>
+                        {{ booking.startDate | date:'dd/MM' }}
+                        → {{ booking.endDate | date:'dd/MM' }}
+                      </span>
+                    </div>
+
+                    <div class="persons-info">
+                      <mat-icon>group</mat-icon>
+                      <span>{{ booking.adults }}A + {{ booking.children }}E</span>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        }
+      </mat-tab>
+
+    </mat-tab-group>
+  }
+</div>

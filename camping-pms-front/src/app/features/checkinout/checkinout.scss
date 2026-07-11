@@ -1,0 +1,202 @@
+.checkinout-container {
+  padding: 88px 24px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .today-badge {
+        background: #667eea;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+    }
+
+    .date-picker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .date-field {
+        width: 200px;
+      }
+    }
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    padding: 64px;
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+
+    .summary-card {
+      border-radius: 12px;
+
+      mat-card-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+
+        mat-icon {
+          font-size: 40px;
+          width: 40px;
+          height: 40px;
+        }
+
+        .summary-info {
+          display: flex;
+          flex-direction: column;
+
+          .count {
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1;
+          }
+
+          .label {
+            font-size: 14px;
+            color: #666;
+          }
+        }
+      }
+
+      &.arrivals {
+        border-left: 4px solid #4caf50;
+        mat-icon { color: #4caf50; }
+        .count { color: #4caf50; }
+      }
+
+      &.departures {
+        border-left: 4px solid #f44336;
+        mat-icon { color: #f44336; }
+        .count { color: #f44336; }
+      }
+
+      &.present {
+        border-left: 4px solid #667eea;
+        mat-icon { color: #667eea; }
+        .count { color: #667eea; }
+      }
+    }
+  }
+
+  .tabs {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 48px;
+    color: #999;
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  .bookings-list {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .booking-row {
+      border-radius: 10px;
+      transition: transform 0.1s;
+
+      &:hover { transform: translateX(4px); }
+
+      mat-card-content {
+        padding: 16px;
+      }
+
+      .row-main {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+
+        > div {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 14px;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            color: #667eea;
+          }
+        }
+
+        .accommodation-info {
+          min-width: 180px;
+          .acc-name {
+            font-weight: 700;
+            font-size: 15px;
+          }
+        }
+
+        .client-info {
+          min-width: 200px;
+          .phone { color: #999; font-size: 12px; }
+        }
+
+        .deposit-info {
+          &.deposit-pending { color: #f57c00; mat-icon { color: #f57c00; } }
+          &.deposit-held { color: #4caf50; mat-icon { color: #4caf50; } }
+          &.deposit-returned { color: #9e9e9e; }
+        }
+
+        .price-info .price {
+          font-weight: 700;
+          color: #667eea;
+          font-size: 16px;
+        }
+      }
+
+      &.arrival-card { border-left: 4px solid #4caf50; }
+      &.departure-card { border-left: 4px solid #f44336; }
+      &.present-card { border-left: 4px solid #667eea; }
+    }
+  }
+}
