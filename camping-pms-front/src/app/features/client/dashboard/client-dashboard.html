@@ -1,0 +1,97 @@
+<app-public-navbar />
+
+<div class="client-container">
+  @if (user) {
+    <div class="welcome-section">
+      <div class="welcome-card">
+        <mat-icon class="avatar-icon">account_circle</mat-icon>
+        <div class="welcome-text">
+          <h1>Bonjour {{ user.firstName }} ! 👋</h1>
+          <p>{{ user.email }}</p>
+        </div>
+        <button mat-stroked-button color="warn" (click)="logout()">
+          <mat-icon>logout</mat-icon> Déconnexion
+        </button>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h2>📅 Mes réservations</h2>
+      <a mat-raised-button color="primary" routerLink="/hebergements">
+        <mat-icon>add</mat-icon> Nouvelle réservation
+      </a>
+    </div>
+
+    @if (loading) {
+      <div class="loading">
+        <mat-spinner />
+      </div>
+    } @else if (bookings.length === 0) {
+      <div class="empty-state">
+        <mat-icon>event_busy</mat-icon>
+        <h3>Aucune réservation</h3>
+        <p>Vous n'avez pas encore de réservation.</p>
+        <a mat-raised-button color="primary" routerLink="/hebergements">
+          Découvrir nos hébergements
+        </a>
+      </div>
+    } @else {
+      <div class="bookings-grid">
+        @for (booking of bookings; track booking.id) {
+          <mat-card class="booking-card">
+            <mat-card-header>
+              <mat-card-title>{{ booking.accommodation.name }}</mat-card-title>
+              <mat-card-subtitle>
+                <mat-chip [color]="getStatusColor(booking.status)" highlighted>
+                  {{ getStatusLabel(booking.status) }}
+                </mat-chip>
+              </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <mat-divider />
+              <div class="booking-info">
+                <div class="info-row">
+                  <mat-icon>event</mat-icon>
+                  <span>
+                    {{ booking.startDate | date:'dd/MM/yyyy' }}
+                    → {{ booking.endDate | date:'dd/MM/yyyy' }}
+                  </span>
+                </div>
+                <div class="info-row">
+                  <mat-icon>nights_stay</mat-icon>
+                  <span>{{ getNights(booking.startDate, booking.endDate) }} nuit(s)</span>
+                </div>
+                <div class="info-row">
+                  <mat-icon>group</mat-icon>
+                  <span>{{ booking.adults }} adulte(s) + {{ booking.children }} enfant(s)</span>
+                </div>
+                <div class="info-row price">
+                  <mat-icon>euro</mat-icon>
+                  <span>{{ booking.totalPrice }}€</span>
+                </div>
+                @if (booking.depositStatus) {
+                  <div class="info-row">
+                    <mat-icon>security</mat-icon>
+                    <span>Caution : {{ booking.depositAmount }}€
+                      ({{ booking.depositStatus }})</span>
+                  </div>
+                }
+              </div>
+            </mat-card-content>
+
+            <mat-card-actions>
+              @if (booking.status === 'CONFIRMED') {
+                <a mat-stroked-button color="primary"
+                   [href]="'/public/bookings/' + booking.id + '/pdf'"
+                   target="_blank">
+                  <mat-icon>download</mat-icon> Mon bon d'échange
+                </a>
+              }
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    }
+  }
+</div>

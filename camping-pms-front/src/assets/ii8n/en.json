@@ -6,7 +6,9 @@
     "dashboard": "Dashboard",
     "profile": "My Profile",
     "logout": "Logout",
-    "login": "Login"
+    "login": "Login",
+    "my_space": "My Space",
+    "register": "Sign Up"
   },
   "home": {
     "hero_title": "Welcome to the Campsite",

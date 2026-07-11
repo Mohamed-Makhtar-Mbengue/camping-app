@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
-  // Routes publiques
+  // Site public
   {
     path: '',
     loadComponent: () => import('./features/public/home/home')
@@ -29,17 +29,32 @@ export const routes: Routes = [
       .then(m => m.Confirmation)
   },
 
-  // Routes privées
+  // Auth client
   {
-    path: 'login',
-    loadComponent: () => import('./features/auth/login/login')
-      .then(m => m.Login)
+    path: 'mon-espace/login',
+    loadComponent: () => import('./features/client/login/client-login')
+      .then(m => m.ClientLogin)
   },
   {
     path: 'register',
     loadComponent: () => import('./features/auth/register/register')
       .then(m => m.Register)
   },
+  {
+    path: 'mon-espace',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/client/dashboard/client-dashboard')
+      .then(m => m.ClientDashboard)
+  },
+
+  // Auth staff (discret)
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login')
+      .then(m => m.Login)
+  },
+
+  // Admin/Staff
   {
     path: 'dashboard',
     canActivate: [authGuard],

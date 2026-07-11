@@ -6,7 +6,9 @@
     "dashboard": "Dashboard",
     "profile": "Mein Profil",
     "logout": "Abmelden",
-    "login": "Anmelden"
+    "login": "Anmelden",
+    "my_space": "Mein Bereich",
+    "register": "Registrieren"
   },
   "home": {
     "hero_title": "Willkommen auf dem Campingplatz",

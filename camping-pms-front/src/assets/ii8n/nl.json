@@ -6,7 +6,9 @@
     "dashboard": "Dashboard",
     "profile": "Mijn Profiel",
     "logout": "Uitloggen",
-    "login": "Inloggen"
+    "login": "Inloggen",
+    "my_space": "Mijn Ruimte",
+    "register": "Registreren"
   },
   "home": {
     "hero_title": "Welkom op de Camping",
