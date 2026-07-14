@@ -96,4 +96,29 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
         ORDER BY b.accommodation.name ASC
     """)
     List<Booking> findCurrentlyPresent(@Param("today") LocalDate today);
+
+    @Query("""
+    SELECT b FROM Booking b
+    WHERE b.accommodation.id = :accommodationId
+    AND b.status != 'CANCELLED'
+    AND b.startDate <= :endOfMonth
+    AND b.endDate >= :startOfMonth
+    """)
+    List<Booking> findByAccommodationAndMonth(
+        @Param("accommodationId") UUID accommodationId,
+        @Param("startOfMonth") LocalDate startOfMonth,
+        @Param("endOfMonth") LocalDate endOfMonth
+    );
+
+    @Query("""
+        SELECT b FROM Booking b
+        WHERE b.status != 'CANCELLED'
+        AND b.startDate <= :endOfMonth
+        AND b.endDate >= :startOfMonth
+        ORDER BY b.startDate ASC
+    """)
+    List<Booking> findAllByMonth(
+        @Param("startOfMonth") LocalDate startOfMonth,
+        @Param("endOfMonth") LocalDate endOfMonth
+    );
 }

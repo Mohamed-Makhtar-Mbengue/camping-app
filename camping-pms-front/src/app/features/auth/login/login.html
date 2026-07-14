@@ -1,38 +1,41 @@
 <div class="login-container">
   <mat-card class="login-card">
     <mat-card-header>
-      <mat-card-title>🏕️ Camping PMS</mat-card-title>
-      <mat-card-subtitle>Connectez-vous à votre compte</mat-card-subtitle>
+      <div class="logo-section">
+        <span class="logo-icon">🏕️</span>
+        <div>
+          <mat-card-title>Camping PMS</mat-card-title>
+          <mat-card-subtitle>Espace personnel — Accès staff</mat-card-subtitle>
+        </div>
+      </div>
     </mat-card-header>
 
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
-
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="username" type="email" placeholder="email@exemple.com">
-          <mat-icon matSuffix>email</mat-icon>
+          <input matInput type="email" formControlName="username">
+          <mat-icon matSuffix>badge</mat-icon>
           @if (form.get('username')?.hasError('required')) {
-            <mat-error>L'email est obligatoire</mat-error>
-          }
-          @if (form.get('username')?.hasError('email')) {
-            <mat-error>Email invalide</mat-error>
+            <mat-error>Email obligatoire</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Mot de passe</mat-label>
-          <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'">
-          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <input matInput [type]="hidePassword ? 'password' : 'text'"
+                 formControlName="password">
+          <button mat-icon-button matSuffix type="button"
+                  (click)="hidePassword = !hidePassword">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
-          @if (form.get('password')?.hasError('required')) {
-            <mat-error>Le mot de passe est obligatoire</mat-error>
-          }
         </mat-form-field>
 
         @if (error) {
-          <p class="error-message">{{ error }}</p>
+          <div class="error-box">
+            <mat-icon>error</mat-icon>
+            <span>{{ error }}</span>
+          </div>
         }
 
         <button mat-raised-button color="primary" type="submit"
@@ -40,17 +43,16 @@
           @if (loading) {
             <mat-spinner diameter="20" />
           } @else {
-            Se connecter
+            Connexion
           }
         </button>
-
       </form>
     </mat-card-content>
 
     <mat-card-actions>
-      <p class="register-link">
-        Pas encore de compte ?
-        <a routerLink="/register">S'inscrire</a>
+      <p class="client-link">
+        Vous êtes client ?
+        <a routerLink="/mon-espace/login">Accès espace client →</a>
       </p>
     </mat-card-actions>
   </mat-card>

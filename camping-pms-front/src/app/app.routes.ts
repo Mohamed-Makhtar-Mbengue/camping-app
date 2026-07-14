@@ -85,5 +85,12 @@ export const routes: Routes = [
   loadComponent: () => import('./features/checkinout/checkinout')
     .then(m => m.Checkinout)
   },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
+
+  {
+  path: 'calendar',
+  canActivate: [authGuard],
+  loadComponent: () => import('./features/calendar/calendar')
+    .then(m => m.Calendar)
+}
 ];

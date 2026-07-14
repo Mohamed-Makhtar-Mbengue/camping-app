@@ -1,16 +1,28 @@
 <div class="login-container">
   <mat-card class="login-card">
     <mat-card-header>
-      <mat-card-title>🏕️ Mon Espace Client</mat-card-title>
-      <mat-card-subtitle>Connectez-vous pour gérer vos réservations</mat-card-subtitle>
+      <div class="logo-section">
+        <span class="logo-icon">🏕️</span>
+        <div>
+          <mat-card-title>Mon Espace Client</mat-card-title>
+          <mat-card-subtitle>Gérez vos réservations en ligne</mat-card-subtitle>
+        </div>
+      </div>
     </mat-card-header>
 
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="username">
+          <input matInput type="email" formControlName="username"
+                 placeholder="votre@email.com">
           <mat-icon matSuffix>email</mat-icon>
+          @if (form.get('username')?.hasError('required')) {
+            <mat-error>Email obligatoire</mat-error>
+          }
+          @if (form.get('username')?.hasError('email')) {
+            <mat-error>Email invalide</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -21,10 +33,16 @@
                   (click)="hidePassword = !hidePassword">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
+          @if (form.get('password')?.hasError('required')) {
+            <mat-error>Mot de passe obligatoire</mat-error>
+          }
         </mat-form-field>
 
         @if (error) {
-          <p class="error-message">{{ error }}</p>
+          <div class="error-box">
+            <mat-icon>error</mat-icon>
+            <span>{{ error }}</span>
+          </div>
         }
 
         <button mat-raised-button color="primary" type="submit"
@@ -39,14 +57,15 @@
     </mat-card-content>
 
     <mat-card-actions>
-      <p class="register-link">
-        Pas encore de compte ?
-        <a routerLink="/register">Créer mon espace client</a>
-      </p>
-      <p class="staff-link">
-        Personnel camping ?
-        <a routerLink="/login">Accès staff →</a>
-      </p>
+      <div class="links">
+        <p>Pas encore de compte ?
+          <a routerLink="/register">Créer mon espace client</a>
+        </p>
+        <p class="staff-link">
+          Personnel du camping ?
+          <a routerLink="/login">Accès staff →</a>
+        </p>
+      </div>
     </mat-card-actions>
   </mat-card>
 </div>

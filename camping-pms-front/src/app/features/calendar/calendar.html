@@ -1,0 +1,179 @@
+<app-navbar />
+
+<div class="calendar-container">
+  <div class="calendar-layout">
+
+    <!-- Calendrier principal -->
+    <div class="calendar-main">
+      <mat-card class="calendar-card">
+
+        <!-- Header navigation -->
+        <div class="calendar-header">
+          <button mat-icon-button (click)="prevMonth()">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <h2>{{ monthNames[currentMonth - 1] }} {{ currentYear }}</h2>
+          <button mat-icon-button (click)="nextMonth()">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+          <button mat-stroked-button (click)="goToToday()"> Aujourd'hui </button>
+        </div>
+
+        <!-- Légende -->
+        <div class="legend">
+          <span class="legend-item">
+            <span class="dot checkin"></span> Arrivée
+          </span>
+          <span class="legend-item">
+            <span class="dot checkout"></span> Départ
+          </span>
+          <span class="legend-item">
+            <span class="dot low"></span> 1-5 rés.
+          </span>
+          <span class="legend-item">
+            <span class="dot medium"></span> 6-15 rés.
+          </span>
+          <span class="legend-item">
+            <span class="dot high"></span> 16+ rés.
+          </span>
+        </div>
+
+        @if (loading) {
+          <div class="loading"><mat-spinner /></div>
+        } @else {
+          <!-- Jours de la semaine -->
+          <div class="day-names">
+            @for (day of dayNames; track day) {
+              <div class="day-name">{{ day }}</div>
+            }
+          </div>
+
+          <!-- Grille calendrier -->
+          <div class="calendar-grid">
+            @for (day of calendarDays; track day.date) {
+              <div class="calendar-day"
+                   [class.other-month]="!day.isCurrentMonth"
+                   [class.today]="day.isToday"
+                   [class.selected]="selectedDay?.date?.toDateString() === day.date.toDateString()"
+                   [class.has-bookings]="day.bookings.length > 0"
+                   [class]="getOccupancyColor(day.occupied)"
+                   (click)="selectDay(day)">
+
+                <span class="day-number">{{ day.dayNumber }}</span>
+
+                @if (day.isCurrentMonth) {
+                  <div class="day-indicators">
+                    @if (day.checkIns.length > 0) {
+                      <span class="indicator checkin"
+                            [matTooltip]="day.checkIns.length + ' arrivée(s)'">
+                        ↓{{ day.checkIns.length }}
+                      </span>
+                    }
+                    @if (day.checkOuts.length > 0) {
+                      <span class="indicator checkout"
+                            [matTooltip]="day.checkOuts.length + ' départ(s)'">
+                        ↑{{ day.checkOuts.length }}
+                      </span>
+                    }
+                    @if (day.occupied > 0) {
+                      <span class="indicator occupied"
+                            [matTooltip]="day.occupied + ' hébergement(s) occupé(s)'">
+                        🏠{{ day.occupied }}
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </mat-card>
+    </div>
+
+    <!-- Panneau détail du jour sélectionné -->
+    <div class="calendar-side">
+      @if (selectedDay && selectedDay.isCurrentMonth) {
+        <mat-card class="day-detail">
+          <mat-card-header>
+            <mat-card-title>
+              {{ selectedDay.dayNumber }}
+              {{ monthNames[currentMonth - 1] }}
+              {{ currentYear }}
+            </mat-card-title>
+            <mat-card-subtitle>
+              {{ selectedDay.bookings.length }} réservation(s) —
+              {{ getTotalPersons() }} personne(s)
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            @if (selectedDay.checkIns.length > 0) {
+              <div class="section-title checkin-title">
+                <mat-icon>login</mat-icon> Arrivées ({{ selectedDay.checkIns.length }})
+              </div>
+              @for (b of selectedDay.checkIns; track b.id) {
+                <div class="booking-item checkin-item">
+                  <div class="booking-name">
+                    {{ b.customer.firstName }} {{ b.customer.lastName }}
+                  </div>
+                  <div class="booking-acc">{{ b.accommodation.name }}</div>
+                  <div class="booking-persons">
+                    {{ b.adults }}A + {{ b.children }}E
+                  </div>
+                </div>
+              }
+            }
+
+            @if (selectedDay.checkOuts.length > 0) {
+              <div class="section-title checkout-title">
+                <mat-icon>logout</mat-icon> Départs ({{ selectedDay.checkOuts.length }})
+              </div>
+              @for (b of selectedDay.checkOuts; track b.id) {
+                <div class="booking-item checkout-item">
+                  <div class="booking-name">
+                    {{ b.customer.firstName }} {{ b.customer.lastName }}
+                  </div>
+                  <div class="booking-acc">{{ b.accommodation.name }}</div>
+                </div>
+              }
+            }
+
+            @if (selectedDay.bookings.length > 0) {
+              <div class="section-title occupied-title">
+                <mat-icon>hotel</mat-icon> Occupés ({{ selectedDay.bookings.length }})
+              </div>
+              @for (b of selectedDay.bookings; track b.id) {
+                <div class="booking-item occupied-item">
+                  <div class="booking-name">
+                    {{ b.customer.firstName }} {{ b.customer.lastName }}
+                  </div>
+                  <div class="booking-acc">{{ b.accommodation.name }}</div>
+                  <div class="booking-dates">
+                    {{ b.startDate | date:'dd/MM' }}
+                    → {{ b.endDate | date:'dd/MM' }}
+                  </div>
+                </div>
+              }
+            }
+
+            @if (selectedDay.bookings.length === 0 &&
+                 selectedDay.checkIns.length === 0 &&
+                 selectedDay.checkOuts.length === 0) {
+              <div class="empty-day">
+                <mat-icon>event_available</mat-icon>
+                <p>Aucune réservation ce jour</p>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      } @else {
+        <mat-card class="day-detail empty-detail">
+          <mat-card-content>
+            <mat-icon>touch_app</mat-icon>
+            <p>Cliquez sur un jour pour voir les détails</p>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </div>
+</div>

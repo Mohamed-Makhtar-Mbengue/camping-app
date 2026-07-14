@@ -1,0 +1,255 @@
+.calendar-container {
+  padding: 88px 24px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .calendar-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .calendar-main {
+    .calendar-card {
+      border-radius: 16px;
+      padding: 24px;
+
+      .calendar-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 16px;
+
+        h2 {
+          font-size: 22px;
+          font-weight: 700;
+          min-width: 200px;
+          text-align: center;
+          margin: 0;
+        }
+      }
+
+      .legend {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13px;
+          color: #666;
+        }
+
+        .dot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+
+          &.checkin { background: #4caf50; }
+          &.checkout { background: #f44336; }
+          &.low { background: #fff9c4; border: 1px solid #f9a825; }
+          &.medium { background: #ffe0b2; border: 1px solid #ef6c00; }
+          &.high { background: #ffcdd2; border: 1px solid #c62828; }
+        }
+      }
+
+      .loading {
+        display: flex;
+        justify-content: center;
+        padding: 64px;
+      }
+
+      .day-names {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+        margin-bottom: 8px;
+
+        .day-name {
+          text-align: center;
+          font-weight: 600;
+          font-size: 13px;
+          color: #666;
+          padding: 8px 0;
+        }
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 4px;
+
+        .calendar-day {
+          min-height: 80px;
+          border-radius: 8px;
+          padding: 8px;
+          cursor: pointer;
+          border: 2px solid transparent;
+          transition: all 0.2s;
+          position: relative;
+          background: #fafafa;
+
+          &:hover:not(.other-month) {
+            border-color: #667eea;
+            background: #f0f4ff;
+          }
+
+          &.other-month {
+            opacity: 0.3;
+            cursor: default;
+          }
+
+          &.today {
+            border-color: #667eea;
+            background: #f0f4ff;
+            .day-number { color: #667eea; font-weight: 700; }
+          }
+
+          &.selected {
+            border-color: #667eea;
+            background: #e8edff;
+          }
+
+          &.low { background: #fff9c4; }
+          &.medium { background: #ffe0b2; }
+          &.high { background: #ffcdd2; }
+
+          .day-number {
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+          }
+
+          .day-indicators {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+
+            .indicator {
+              font-size: 11px;
+              padding: 1px 4px;
+              border-radius: 4px;
+              font-weight: 600;
+
+              &.checkin {
+                background: #c8e6c9;
+                color: #2e7d32;
+              }
+
+              &.checkout {
+                background: #ffcdd2;
+                color: #c62828;
+              }
+
+              &.occupied {
+                background: #e3f2fd;
+                color: #1565c0;
+                font-size: 10px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .calendar-side {
+    .day-detail {
+      border-radius: 16px;
+      position: sticky;
+      top: 88px;
+
+      mat-card-header {
+        margin-bottom: 16px;
+      }
+
+      mat-card-content {
+        .section-title {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-weight: 700;
+          font-size: 14px;
+          margin: 16px 0 8px;
+          padding-bottom: 4px;
+          border-bottom: 2px solid;
+
+          mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+          &.checkin-title {
+            color: #2e7d32;
+            border-color: #4caf50;
+          }
+          &.checkout-title {
+            color: #c62828;
+            border-color: #f44336;
+          }
+          &.occupied-title {
+            color: #1565c0;
+            border-color: #667eea;
+          }
+        }
+
+        .booking-item {
+          padding: 8px 12px;
+          border-radius: 8px;
+          margin-bottom: 6px;
+          font-size: 13px;
+
+          .booking-name { font-weight: 600; }
+          .booking-acc { color: #666; font-size: 12px; }
+          .booking-dates { color: #999; font-size: 11px; }
+          .booking-persons { color: #555; font-size: 12px; }
+
+          &.checkin-item { background: #f1f8f1; }
+          &.checkout-item { background: #fff5f5; }
+          &.occupied-item { background: #f0f4ff; }
+        }
+
+        .empty-day {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          padding: 32px;
+          color: #999;
+
+          mat-icon {
+            font-size: 40px;
+            width: 40px;
+            height: 40px;
+          }
+        }
+      }
+
+      &.empty-detail {
+        mat-card-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          padding: 48px 24px;
+          color: #bbb;
+
+          mat-icon {
+            font-size: 48px;
+            width: 48px;
+            height: 48px;
+          }
+
+          p { text-align: center; }
+        }
+      }
+    }
+  }
+}

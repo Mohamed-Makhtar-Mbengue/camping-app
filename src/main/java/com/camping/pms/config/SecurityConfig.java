@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/stats/**").hasAnyRole("ADMIN", "USER")
                 .requestMatchers("/api/customers/**").hasRole("ADMIN")
                 .requestMatchers("/api/checkinout/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/api/calendar/**").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated()
             )
             .httpBasic(basic -> basic.disable())

@@ -31,10 +31,28 @@
     gap: 8px;
 
     .lang-btn {
-      color: #333;
-      font-weight: 600;
-    }
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #333;
+  padding: 0 8px;
 
+  .flag {
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .lang-code {
+    font-size: 13px;
+    font-weight: 700;
+  }
+}
+
+    .active-lang {
+      background: #f0f4ff;
+      color: #667eea;
+      font-weight: 700;
+    }
     .client-btn {
       color: #667eea;
     }

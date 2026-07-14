@@ -33,4 +33,10 @@ export class PublicNavbar implements OnInit {
   ngOnInit(): void {
     this.cdr.detectChanges();
   }
+
+  setLanguage(lang: string): void {
+    this.langService.setLanguage(lang);
+    this.cdr.markForCheck();
+    setTimeout(() => this.cdr.detectChanges(), 100);
+  }
 }

@@ -17,14 +17,17 @@
   <div class="right-section">
     <!-- Sélecteur de langue -->
     <button mat-button [matMenuTriggerFor]="langMenu" class="lang-btn">
-      {{ langService.getCurrentLanguage().flag }}
-      {{ langService.getCurrentLanguage().code.toUpperCase() }}
+      <span class="flag">{{ langService.getCurrentLanguage().flag }}</span>
+      &nbsp;
+      <span class="lang-code">{{ langService.getCurrentLanguage().code.toUpperCase() }}</span>
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <mat-menu #langMenu="matMenu">
       @for (lang of langService.languages; track lang.code) {
-        <button mat-menu-item (click)="langService.setLanguage(lang.code)">
-          {{ lang.flag }} {{ lang.label }}
+        <button mat-menu-item (click)="setLanguage(lang.code)"
+        [class.active-lang]="lang.code === langService.currentLang()">
+          <span class="flag">{{ lang.flag }}</span>
+          <span>{{ lang.label }}</span>
         </button>
       }
     </mat-menu>

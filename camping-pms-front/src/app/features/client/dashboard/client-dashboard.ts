@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,6 +36,7 @@ export class ClientDashboard implements OnInit {
   constructor(
     private authService: AuthService,
     private bookingService: BookingService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -83,6 +84,8 @@ export class ClientDashboard implements OnInit {
   }
 
   logout(): void {
-    this.authService.logout().subscribe();
-  }
+        this.authService.logout().subscribe({
+            next: () => this.router.navigate(['/'])
+        });
+     }
 }

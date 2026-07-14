@@ -21,14 +21,17 @@ export class LanguageService {
 
   constructor(private translate: TranslateService) {
     const saved = localStorage.getItem('lang') || 'fr';
-    this.setLanguage(saved);
+    // Applique la langue sans recharger
+    this.translate.use(saved);
+    this.currentLang.set(saved);
+    document.documentElement.lang = saved;
   }
 
   setLanguage(lang: string): void {
-    this.translate.use(lang);
-    this.currentLang.set(lang);
+    if (lang === this.currentLang()) return; // évite boucle si même langue
     localStorage.setItem('lang', lang);
-    document.documentElement.lang = lang;
+    // Recharge uniquement si langue différente
+    window.location.href = window.location.href.split('?')[0] + '?lang=' + lang;
   }
 
   getCurrentLanguage(): Language {

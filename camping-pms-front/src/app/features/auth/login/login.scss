@@ -3,48 +3,85 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 24px;
 
   .login-card {
     width: 100%;
     max-width: 420px;
-    padding: 24px;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    border-radius: 20px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    overflow: hidden;
 
     mat-card-header {
-      margin-bottom: 24px;
-      mat-card-title {
-        font-size: 24px;
-        font-weight: 700;
+      background: linear-gradient(135deg, #0f3460, #533483);
+      padding: 32px 24px;
+      margin: 0;
+
+      .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .logo-icon { font-size: 48px; line-height: 1; }
+
+        mat-card-title {
+          color: white !important;
+          font-size: 22px !important;
+          font-weight: 700 !important;
+          margin: 0 !important;
+        }
+
+        mat-card-subtitle {
+          color: rgba(255,255,255,0.7) !important;
+          margin: 4px 0 0 !important;
+        }
       }
     }
 
-    .full-width {
-      width: 100%;
-      margin-bottom: 16px;
+    mat-card-content {
+      padding: 32px 24px 16px;
+
+      .full-width { width: 100%; margin-bottom: 12px; }
+
+      .error-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #ffebee;
+        color: #c62828;
+        padding: 10px 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-size: 14px;
+
+        mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      }
+
+      .submit-btn {
+        width: 100%;
+        height: 48px;
+        font-size: 16px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
     }
 
-    .error-message {
-      color: #f44336;
-      font-size: 14px;
-      margin-bottom: 16px;
-    }
-
-    .submit-btn {
-      height: 48px;
-      font-size: 16px;
-      margin-bottom: 16px;
-    }
-
-    .register-link {
+    mat-card-actions {
+      padding: 0 24px 24px;
       text-align: center;
-      color: #666;
-      a {
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 600;
-        &:hover { text-decoration: underline; }
+
+      .client-link {
+        color: #999;
+        font-size: 13px;
+        a {
+          color: #667eea;
+          text-decoration: none;
+          &:hover { text-decoration: underline; }
+        }
       }
     }
   }
