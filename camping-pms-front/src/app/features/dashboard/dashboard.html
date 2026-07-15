@@ -1,45 +1,183 @@
 <app-navbar />
 
 <div class="dashboard-container">
-  <h1>Tableau de bord</h1>
-
-  <div class="stats-grid">
-    <mat-card class="stat-card" routerLink="/accommodations">
-      <mat-card-content>
-        <mat-icon class="stat-icon accommodation">cabin</mat-icon>
-        <div class="stat-info">
-          <span class="stat-number">{{ stats.accommodations }}</span>
-          <span class="stat-label">Hébergements</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="stat-card" routerLink="/bookings">
-      <mat-card-content>
-        <mat-icon class="stat-icon booking">event</mat-icon>
-        <div class="stat-info">
-          <span class="stat-number">{{ stats.myBookings }}</span>
-          <span class="stat-label">Mes réservations</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
+  <div class="page-header">
+    <h1>📊 Tableau de bord</h1>
+    <span class="date">{{ monthNames[currentMonth - 1] }} {{ currentYear }}</span>
   </div>
 
-  <div class="quick-actions">
-    <h2>Actions rapides</h2>
-    <div class="actions-grid">
-      <mat-card class="action-card" routerLink="/accommodations">
+  @if (loading) {
+    <div class="loading"><mat-spinner /></div>
+  } @else if (stats) {
+
+    <!-- KPIs principaux -->
+    <div class="kpi-grid">
+      <mat-card class="kpi-card blue">
         <mat-card-content>
-          <mat-icon>search</mat-icon>
-          <span>Voir les hébergements</span>
+          <div class="kpi-icon"><mat-icon>cabin</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ stats.totalAccommodations }}</span>
+            <span class="kpi-label">Hébergements</span>
+          </div>
         </mat-card-content>
       </mat-card>
-      <mat-card class="action-card" routerLink="/bookings">
+
+      <mat-card class="kpi-card green">
         <mat-card-content>
-          <mat-icon>add_circle</mat-icon>
-          <span>Mes réservations</span>
+          <div class="kpi-icon"><mat-icon>event</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ stats.totalBookings }}</span>
+            <span class="kpi-label">Réservations totales</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card orange">
+        <mat-card-content>
+          <div class="kpi-icon"><mat-icon>pending</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ stats.pendingBookings }}</span>
+            <span class="kpi-label">En attente</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card purple">
+        <mat-card-content>
+          <div class="kpi-icon"><mat-icon>group</mat-icon></div>
+          <div class="kpi-info">
+            <span class="kpi-value">{{ stats.totalPersons }}</span>
+            <span class="kpi-label">Personnes total</span>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>
-  </div>
+
+    <!-- Revenus et taux d'occupation -->
+    <div class="metrics-grid">
+
+      <!-- Taux d'occupation -->
+      <mat-card class="metric-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>donut_large</mat-icon>
+            Taux d'occupation
+          </mat-card-title>
+          <mat-card-subtitle>Mois en cours</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="occupancy-display">
+            <div class="occupancy-circle"
+                 [style.background]="'conic-gradient(' + getOccupancyColor() + ' ' + stats.occupancyRate + '%, #eee ' + stats.occupancyRate + '%)'">
+              <div class="occupancy-inner">
+                <span class="occupancy-value">{{ stats.occupancyRate }}%</span>
+                <span class="occupancy-sub">occupation</span>
+              </div>
+            </div>
+            <div class="occupancy-legend">
+              <div class="legend-item">
+                <span class="dot confirmed"></span>
+                <span>Confirmées : {{ stats.confirmedBookings }}</span>
+              </div>
+              <div class="legend-item">
+                <span class="dot pending"></span>
+                <span>En attente : {{ stats.pendingBookings }}</span>
+              </div>
+              <div class="legend-item">
+                <span class="dot cancelled"></span>
+                <span>Annulées : {{ stats.cancelledBookings }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Revenus -->
+      <mat-card class="metric-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>euro</mat-icon>
+            Revenus
+          </mat-card-title>
+          <mat-card-subtitle>Total et mois en cours</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="revenue-display">
+            <div class="revenue-total">
+              <span class="revenue-value">{{ stats.totalRevenue | number:'1.0-0' }}€</span>
+              <span class="revenue-label">Revenus totaux</span>
+            </div>
+            <div class="revenue-month">
+              <span class="revenue-value month">{{ stats.monthRevenue | number:'1.0-0' }}€</span>
+              <span class="revenue-label">Ce mois</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+
+    <!-- Graphique revenus par mois -->
+    @if (stats.revenueByMonth && stats.revenueByMonth.length > 0) {
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>bar_chart</mat-icon>
+            Revenus des 6 derniers mois
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="bar-chart">
+            @for (item of stats.revenueByMonth; track item['month']) {
+              <div class="bar-item">
+                <div class="bar-container">
+                  <div class="bar-value">{{ item['revenue'] | number:'1.0-0' }}€</div>
+                  <div class="bar"
+                       [style.height.%]="getBarHeight(item['revenue'])"
+                       [style.background]="'#667eea'">
+                  </div>
+                </div>
+                <div class="bar-label">{{ formatMonth(item['month']) }}</div>
+                <div class="bar-bookings">{{ item['bookings'] }} rés.</div>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Actions rapides -->
+    <div class="quick-actions">
+      <h2>Actions rapides</h2>
+      <div class="actions-grid">
+        <mat-card class="action-card" routerLink="/bookings">
+          <mat-card-content>
+            <mat-icon>event</mat-icon>
+            <span>Réservations</span>
+            @if (stats.pendingBookings > 0) {
+              <span class="badge">{{ stats.pendingBookings }}</span>
+            }
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="action-card" routerLink="/checkinout">
+          <mat-card-content>
+            <mat-icon>swap_horiz</mat-icon>
+            <span>Arrivées/Départs</span>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="action-card" routerLink="/calendar">
+          <mat-card-content>
+            <mat-icon>calendar_month</mat-icon>
+            <span>Calendrier</span>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="action-card" routerLink="/accommodations">
+          <mat-card-content>
+            <mat-icon>cabin</mat-icon>
+            <span>Hébergements</span>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  }
 </div>

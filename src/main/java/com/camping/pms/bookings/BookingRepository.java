@@ -121,4 +121,39 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
         @Param("startOfMonth") LocalDate startOfMonth,
         @Param("endOfMonth") LocalDate endOfMonth
     );
+
+    @Query("""
+    SELECT COUNT(b) FROM Booking b
+    WHERE b.status = 'CONFIRMED'
+    AND b.startDate <= :endOfMonth
+    AND b.endDate >= :startOfMonth
+    """)
+    long countOccupiedDays(
+        @Param("startOfMonth") LocalDate startOfMonth,
+        @Param("endOfMonth") LocalDate endOfMonth
+    );
+
+    @Query("""
+        SELECT COALESCE(SUM(b.totalPrice), 0) FROM Booking b
+        WHERE b.status = 'CONFIRMED'
+        AND b.startDate >= :startDate
+        AND b.startDate <= :endDate
+    """)
+    BigDecimal sumRevenueByPeriod(
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
+
+    @Query(value = """
+        SELECT
+            TO_CHAR(start_date, 'YYYY-MM') as month,
+            COUNT(*) as bookings,
+            COALESCE(SUM(total_price), 0) as revenue
+        FROM bookings
+        WHERE status = 'CONFIRMED'
+        AND start_date >= CURRENT_DATE - INTERVAL '6 months'
+        GROUP BY TO_CHAR(start_date, 'YYYY-MM')
+        ORDER BY month ASC
+    """, nativeQuery = true)
+    List<Map<String, Object>> getRevenueByMonth();
 }

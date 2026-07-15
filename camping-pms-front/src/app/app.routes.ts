@@ -80,17 +80,18 @@ export const routes: Routes = [
       .then(m => m.Profile)
   },
   {
-  path: 'checkinout',
-  canActivate: [authGuard],
-  loadComponent: () => import('./features/checkinout/checkinout')
-    .then(m => m.Checkinout)
+    path: 'checkinout',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/checkinout/checkinout')
+      .then(m => m.Checkinout)
   },
-  { path: '**', redirectTo: '' },
-
   {
-  path: 'calendar',
-  canActivate: [authGuard],
-  loadComponent: () => import('./features/calendar/calendar')
-    .then(m => m.Calendar)
-}
+    path: 'calendar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/calendar/calendar')
+      .then(m => m.Calendar)
+  },
+
+  // Wildcard TOUJOURS EN DERNIER
+  { path: '**', redirectTo: '' }
 ];
