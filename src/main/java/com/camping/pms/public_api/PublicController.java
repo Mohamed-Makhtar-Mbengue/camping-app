@@ -85,9 +85,7 @@ public class PublicController {
     public ResponseEntity<byte[]> downloadBonEchange(@PathVariable UUID id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
         byte[] pdf = pdfService.generateBonEchange(booking);
-
         return ResponseEntity.ok()
                 .header("Content-Type", "application/pdf")
                 .header("Content-Disposition", "attachment; filename=bon-echange-" + id + ".pdf")
@@ -98,6 +96,15 @@ public class PublicController {
     public Map<String, Object> createPublicBooking(@RequestBody PublicBookingRequest request) {
         Accommodation acc = accommodationRepository.findById(request.accommodationId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        // Vérification capacité
+        int totalPersons = request.adults() + request.children();
+        if (totalPersons > acc.getCapacity()) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Le nombre de personnes (" + totalPersons + ") dépasse la capacité maximale (" + acc.getCapacity() + " personnes)"
+            );
+        }
 
         boolean conflict = bookingRepository.existsConflict(
                 request.accommodationId(),
@@ -162,6 +169,17 @@ public class PublicController {
         booking.setDepositAmount(acc.getDepositRequired() != null ?
                 acc.getDepositRequired() : BigDecimal.valueOf(150));
         booking.setDepositStatus("PENDING");
+
+        // Animaux
+        if (request.pets() != null) booking.setPets(request.pets());
+        if (request.animalType() != null) booking.setAnimalType(request.animalType());
+        if (request.animalBreed() != null) booking.setAnimalBreed(request.animalBreed());
+        if (request.animalTattooed() != null) booking.setAnimalTattooed(request.animalTattooed());
+        if (request.animalVaccinated() != null) booking.setAnimalVaccinated(request.animalVaccinated());
+
+        // Véhicule
+        if (request.vehicleType() != null) booking.setVehicleType(request.vehicleType());
+        if (request.licensePlate() != null) booking.setLicensePlate(request.licensePlate());
 
         bookingRepository.save(booking);
 

@@ -46,6 +46,11 @@ public class Booking {
     private BigDecimal supplementsTotal;
     private String notes;
 
+    private String animalType;
+    private String animalBreed;
+    private Boolean animalTattooed;
+    private Boolean animalVaccinated;
+
     private BigDecimal depositAmount;
     private String depositStatus;
     private LocalDate depositReturnedDate;

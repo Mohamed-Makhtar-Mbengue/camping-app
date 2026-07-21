@@ -1,25 +1,46 @@
 .wizard-container {
   padding: 88px 24px 40px;
-  max-width: 700px;
+  max-width: 800px;
   margin: 0 auto;
 
   .wizard-header {
     text-align: center;
     margin-bottom: 32px;
 
-    h1 { font-size: 28px; font-weight: 700; }
-    p { color: #667eea; font-size: 18px; font-weight: 600; }
+    h1 { font-size: 28px; font-weight: 700; color: #fff; }
+    p { color: #667eea; font-size: 16px; font-weight: 600; margin-top: 4px; }
   }
 
   .stepper {
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    overflow: visible !important;
   }
 
   .step-form {
-    padding: 24px 0;
+    padding: 32px 16px 16px;
 
-    .dates-grid, .personal-grid {
+    .step-subtitle {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #555;
+    }
+
+    .dates-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+
+      @media (max-width: 600px) { grid-template-columns: 1fr; }
+
+      mat-form-field {
+        width: 100%;
+      }
+    }
+
+    .personal-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
@@ -34,26 +55,77 @@
       gap: 16px;
     }
 
-    .full-width { grid-column: 1 / -1; }
+    .full-width {
+      width: 100%;
+      margin-bottom: 12px;
+      display: block;
+    }
 
     .acsi-checkbox {
       display: flex;
       align-items: center;
-      margin-bottom: 16px;
+      margin: 12px 0 16px;
 
       label {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         cursor: pointer;
         font-size: 15px;
-        color: #555;
 
         input[type="checkbox"] {
           width: 18px;
           height: 18px;
           cursor: pointer;
+          accent-color: #667eea;
         }
+      }
+    }
+
+    .animal-toggle {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 15px;
+
+        input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+          accent-color: #667eea;
+        }
+      }
+    }
+
+    .checkboxes {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .animal-warning {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      background: #fff3e0;
+      color: #e65100;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 13px;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
       }
     }
 
@@ -62,15 +134,30 @@
       justify-content: space-between;
       align-items: center;
       background: #f0f4ff;
-      padding: 12px 16px;
-      border-radius: 8px;
+      padding: 14px 18px;
+      border-radius: 10px;
       margin-bottom: 16px;
       font-size: 16px;
 
-      strong { color: #667eea; font-size: 20px; }
+      strong { color: #667eea; font-size: 22px; }
     }
 
-    .available, .unavailable {
+    .capacity-error {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffebee;
+      color: #c62828;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      font-weight: 600;
+
+      mat-icon { color: #c62828; }
+    }
+
+    .available {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -78,15 +165,19 @@
       border-radius: 8px;
       margin-bottom: 16px;
       font-weight: 600;
-    }
-
-    .available {
       background: #e8f5e9;
       color: #2e7d32;
       mat-icon { color: #2e7d32; }
     }
 
     .unavailable {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-weight: 600;
       background: #ffebee;
       color: #c62828;
       mat-icon { color: #c62828; }
@@ -121,18 +212,22 @@
       align-items: center;
       gap: 8px;
       background: #e8f5e9;
-      padding: 12px 16px;
-      border-radius: 8px;
+      padding: 14px 18px;
+      border-radius: 10px;
       margin-bottom: 24px;
       color: #2e7d32;
       font-size: 16px;
+      font-weight: 600;
     }
 
     .step-actions {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-top: 24px;
       gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
     }
   }
 }

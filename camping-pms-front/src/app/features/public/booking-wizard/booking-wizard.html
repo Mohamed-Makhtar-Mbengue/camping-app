@@ -4,7 +4,7 @@
   @if (accommodation) {
     <div class="wizard-header">
       <h1>Réserver — {{ accommodation.name }}</h1>
-      <p>{{ accommodation.basePrice }}€ / nuit</p>
+      <p>{{ accommodation.basePrice }}€ / nuit · Capacité : {{ accommodation.capacity }} personnes</p>
     </div>
 
     <mat-stepper linear #stepper class="stepper">
@@ -40,9 +40,17 @@
             </mat-form-field>
           </div>
 
+          @if (capacityError) {
+            <div class="capacity-error">
+              <mat-icon>warning</mat-icon>
+              <span>{{ capacityError }}</span>
+            </div>
+          }
+
           <div class="acsi-checkbox">
             <label>
-              <input type="checkbox" [(ngModel)]="hasAcsiCard" [ngModelOptions]="{standalone: true}">
+              <input type="checkbox" [(ngModel)]="hasAcsiCard"
+                     [ngModelOptions]="{standalone: true}">
               🎫 J'ai une CampingCard ACSI
             </label>
           </div>
@@ -66,7 +74,7 @@
               <div class="acsi-result eligible">
                 <mat-icon>local_offer</mat-icon>
                 <div>
-                  <strong>CampingCard ACSI acceptée pour ces dates !</strong>
+                  <strong>CampingCard ACSI acceptée !</strong>
                   <p>Prix ACSI : {{ acsiPrice }}€ au lieu de {{ normalPrice }}€
                      (économie de {{ acsiDiscount }}€)</p>
                 </div>
@@ -74,7 +82,7 @@
             } @else {
               <div class="acsi-result not-eligible">
                 <mat-icon>info</mat-icon>
-                <span>La CampingCard ACSI n'est pas valable pour ces dates. Tarif normal appliqué.</span>
+                <span>CampingCard ACSI non valable pour ces dates.</span>
               </div>
             }
           }
@@ -82,12 +90,15 @@
           <div class="step-actions">
             <button mat-stroked-button type="button"
                     (click)="checkAvailability()"
-                    [disabled]="datesForm.invalid || loading">
-              @if (loading) { <mat-spinner diameter="20" /> }
-              @else { Vérifier la disponibilité }
+                    [disabled]="datesForm.invalid || loading || !!capacityError">
+              @if (loading) {
+                <mat-spinner diameter="20" />
+              } @else {
+                Vérifier la disponibilité
+              }
             </button>
             <button mat-raised-button color="primary" matStepperNext
-                    [disabled]="!isAvailable">
+                    [disabled]="!isAvailable || !!capacityError">
               Continuer <mat-icon>arrow_forward</mat-icon>
             </button>
           </div>
@@ -131,7 +142,108 @@
         </form>
       </mat-step>
 
-      <!-- Étape 3 : Paiement simulé -->
+      <!-- Étape 3 : Véhicule -->
+      <mat-step [stepControl]="vehicleForm" label="Véhicule">
+        <form [formGroup]="vehicleForm" class="step-form">
+          <h3 class="step-subtitle">🚗 Informations véhicule</h3>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Type de véhicule</mat-label>
+            <mat-select formControlName="vehicleType">
+              <mat-option value="Voiture">🚗 Voiture</mat-option>
+              <mat-option value="Camping-car">🚌 Camping-car</mat-option>
+              <mat-option value="Caravane">🚐 Caravane</mat-option>
+              <mat-option value="Moto">🏍️ Moto</mat-option>
+              <mat-option value="Autre">Autre</mat-option>
+            </mat-select>
+            @if (vehicleForm.get('vehicleType')?.hasError('required')) {
+              <mat-error>Type de véhicule obligatoire</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Plaque d'immatriculation</mat-label>
+            <input matInput formControlName="licensePlate" placeholder="AB-123-CD">
+            <mat-icon matSuffix>directions_car</mat-icon>
+            @if (vehicleForm.get('licensePlate')?.hasError('required')) {
+              <mat-error>Plaque d'immatriculation obligatoire</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="step-actions">
+            <button mat-stroked-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon> Retour
+            </button>
+            <button mat-raised-button color="primary" matStepperNext
+                    [disabled]="vehicleForm.invalid">
+              Continuer <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Étape 4 : Animaux -->
+      <mat-step label="Animaux">
+        <form [formGroup]="animalForm" class="step-form">
+          <h3 class="step-subtitle">🐾 Animaux de compagnie</h3>
+
+          <div class="animal-toggle">
+            <label>
+              <input type="checkbox" [(ngModel)]="hasAnimals"
+                     [ngModelOptions]="{standalone: true}"
+                     (change)="animalForm.patchValue({pets: hasAnimals ? 1 : 0})">
+              J'amène un ou plusieurs animaux
+            </label>
+          </div>
+
+          @if (hasAnimals) {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nombre d'animaux</mat-label>
+              <input matInput type="number" formControlName="pets" min="1">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Type d'animal</mat-label>
+              <mat-select formControlName="animalType">
+                <mat-option value="Chien">🐕 Chien</mat-option>
+                <mat-option value="Chat">🐈 Chat</mat-option>
+                <mat-option value="Autre">Autre</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Race</mat-label>
+              <input matInput formControlName="animalBreed" placeholder="Ex: Labrador">
+            </mat-form-field>
+
+            <div class="checkboxes">
+              <mat-checkbox formControlName="animalTattooed">
+                ✓ Animal tatoué
+              </mat-checkbox>
+              <mat-checkbox formControlName="animalVaccinated">
+                ✓ Animal vacciné
+              </mat-checkbox>
+            </div>
+
+            <div class="animal-warning">
+              <mat-icon>info</mat-icon>
+              <span>Les animaux doivent obligatoirement être tatoués ET vaccinés.
+                    Supplément de 6€/nuit applicable.</span>
+            </div>
+          }
+
+          <div class="step-actions">
+            <button mat-stroked-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon> Retour
+            </button>
+            <button mat-raised-button color="primary" matStepperNext>
+              Continuer <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Étape 5 : Paiement -->
       <mat-step [stepControl]="paymentForm" label="Paiement">
         <form [formGroup]="paymentForm" class="step-form">
           <div class="payment-summary">
@@ -156,7 +268,8 @@
           <div class="card-grid">
             <mat-form-field appearance="outline">
               <mat-label>Date d'expiration (MM/YY)</mat-label>
-              <input matInput formControlName="expiry" placeholder="12/26" maxlength="5">
+              <input matInput formControlName="expiry"
+                     placeholder="12/26" maxlength="5">
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -173,8 +286,11 @@
             <button mat-raised-button color="primary"
                     (click)="confirm()"
                     [disabled]="paymentForm.invalid || loading">
-              @if (loading) { <mat-spinner diameter="20" /> }
-              @else { Confirmer et payer {{ (acsiEligible && hasAcsiCard) ? acsiPrice : totalPrice }}€ }
+              @if (loading) {
+                <mat-spinner diameter="20" />
+              } @else {
+                Confirmer et payer {{ (acsiEligible && hasAcsiCard) ? acsiPrice : totalPrice }}€
+              }
             </button>
           </div>
         </form>

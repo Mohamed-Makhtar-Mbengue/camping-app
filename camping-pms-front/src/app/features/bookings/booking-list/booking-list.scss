@@ -1,5 +1,5 @@
 .bookings-container {
-  padding: 88px 24px 24px;
+  padding: 88px 24px 40px;
   max-width: 1200px;
   margin: 0 auto;
 
@@ -7,7 +7,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
 
     h1 {
       font-size: 28px;
@@ -30,66 +30,103 @@
     padding: 64px;
     color: #999;
 
-    mat-icon {
-      font-size: 64px;
-      width: 64px;
-      height: 64px;
-    }
-
+    mat-icon { font-size: 64px; width: 64px; height: 64px; }
     p { font-size: 18px; }
   }
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 20px;
 
     .booking-card {
-      border-radius: 12px;
-      transition: transform 0.2s;
+      border-radius: 14px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      overflow: hidden;
 
-      &:hover { transform: translateY(-2px); }
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      }
 
-      .booking-details {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-top: 12px;
+      mat-card-header {
+        padding: 16px 16px 0;
+      }
 
-        .detail-row {
+      mat-card-content {
+        padding: 16px;
+
+        .booking-details {
           display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 14px;
-          color: #555;
+          flex-direction: column;
+          gap: 10px;
+          margin-top: 8px;
 
-          mat-icon { font-size: 18px; width: 18px; height: 18px; color: #667eea; }
+          .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #555;
 
-          &.price {
-            font-weight: 700;
-            font-size: 16px;
-            color: #333;
-            mat-icon { color: #4caf50; }
-          }
-          .deposit-section {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #eee;
-
-            .detail-row {
-              display: flex;
-              align-items: center;
-              gap: 8px;
-              flex-wrap: wrap;
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+              color: #667eea;
+              flex-shrink: 0;
             }
 
-            .deduction-info {
-              font-size: 13px;
-              color: #c62828;
-              margin-top: 4px;
+            &.price {
+              font-weight: 700;
+              font-size: 16px;
+              color: #333;
+              mat-icon { color: #4caf50; }
             }
           }
         }
+
+        .deposit-section {
+          margin-top: 12px;
+          padding-top: 12px;
+          border-top: 1px solid #eee;
+
+          .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 14px;
+          }
+
+          .deduction-info {
+            font-size: 13px;
+            color: #c62828;
+            margin-top: 4px;
+          }
+        }
+      }
+
+      mat-card-actions {
+        padding: 8px 16px 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+
+        button {
+          font-size: 13px;
+          height: 36px;
+          line-height: 36px;
+        }
+      }
+      .confirmed-badge {
+        font-size: 13px;
+        color: #2e7d32;
+        font-weight: 600;
+        padding: 4px 8px;
+        background: #e8f5e9;
+        border-radius: 8px;
       }
     }
   }

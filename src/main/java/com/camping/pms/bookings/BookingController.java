@@ -64,7 +64,8 @@ public class BookingController {
     @GetMapping("/{id}")
     public BookingDto findById(@PathVariable UUID id) {
         return BookingDto.from(bookingRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation non trouvée")));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Réservation non trouvée")));
     }
 
     @PostMapping
@@ -73,11 +74,22 @@ public class BookingController {
         Customer currentUser = currentUserService.getCurrentUser();
 
         Accommodation acc = accommodationRepository.findById(request.accommodationId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Hébergement non trouvé"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Hébergement non trouvé"));
+
+        // Vérification capacité
+        int totalPersons = request.adults() + request.children();
+        if (totalPersons > acc.getCapacity()) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Nombre de personnes (" + totalPersons + ") dépasse la capacité (" + acc.getCapacity() + ")"
+            );
+        }
 
         long nights = ChronoUnit.DAYS.between(request.startDate(), request.endDate());
         if (nights <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Les dates sont invalides");
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Les dates sont invalides");
         }
 
         boolean conflict = bookingRepository.existsConflict(
@@ -86,14 +98,17 @@ public class BookingController {
                 request.endDate()
         );
         if (conflict) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Hébergement non disponible pour ces dates");
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT, "Hébergement non disponible pour ces dates");
         }
 
+        // Calcul prix avec ACSI
         BigDecimal total;
         boolean acsiApplied = false;
         BigDecimal acsiDiscount = BigDecimal.ZERO;
 
-        boolean wantsAcsi = request.hasAcsiCard() && acsiService.isEligible(request.startDate(), request.endDate());
+        boolean wantsAcsi = request.hasAcsiCard() &&
+                acsiService.isEligible(request.startDate(), request.endDate());
 
         if (wantsAcsi) {
             BigDecimal normalPrice = pricingService.calculatePrice(
@@ -123,16 +138,20 @@ public class BookingController {
         booking.setStatus("PENDING");
         booking.setAcsiApplied(acsiApplied);
         booking.setAcsiDiscount(acsiDiscount);
-        booking.setDepositAmount(acc.getDepositRequired() != null ? acc.getDepositRequired() : BigDecimal.valueOf(150));
+        booking.setDepositAmount(acc.getDepositRequired() != null ?
+                acc.getDepositRequired() : BigDecimal.valueOf(150));
         booking.setDepositStatus("PENDING");
 
         return BookingDto.from(bookingRepository.save(booking));
     }
 
     @PatchMapping("/{id}/status")
-    public BookingDto updateStatus(@PathVariable UUID id, @RequestParam String status) {
+    public BookingDto updateStatus(
+            @PathVariable UUID id,
+            @RequestParam String status) {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation non trouvée"));
+                .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Réservation non trouvée"));
         booking.setStatus(status);
         Booking saved = bookingRepository.save(booking);
 
@@ -150,7 +169,8 @@ public class BookingController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         if (!bookingRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Réservation non trouvée");
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Réservation non trouvée");
         }
         bookingRepository.deleteById(id);
     }

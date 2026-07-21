@@ -13,5 +13,14 @@ public record PublicBookingRequest(
     String lastName,
     String email,
     String phone,
-    boolean hasAcsiCard
+    boolean hasAcsiCard,
+    // Animaux
+    Integer pets,
+    String animalType,
+    String animalBreed,
+    Boolean animalTattooed,
+    Boolean animalVaccinated,
+    // Véhicule
+    String vehicleType,
+    String licensePlate
 ) {}

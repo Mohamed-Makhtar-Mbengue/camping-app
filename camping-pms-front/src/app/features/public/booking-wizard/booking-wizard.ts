@@ -11,12 +11,15 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { PublicNavbar } from '../../../shared/components/public-navbar/public-navbar';
 import { PublicService } from '../../../core/services/public.service';
 import { Accommodation } from '../../../core/services/accommodation.service';
 
 @Component({
   selector: 'app-booking-wizard',
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -30,6 +33,8 @@ import { Accommodation } from '../../../core/services/accommodation.service';
     MatDatepickerModule,
     MatNativeDateModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
+    MatCheckboxModule,
     PublicNavbar
   ],
   templateUrl: './booking-wizard.html',
@@ -37,8 +42,11 @@ import { Accommodation } from '../../../core/services/accommodation.service';
 })
 export class BookingWizard implements OnInit {
   accommodation: Accommodation | null = null;
+  accommodationCapacity = 0;
   datesForm: FormGroup;
   personalForm: FormGroup;
+  vehicleForm: FormGroup;
+  animalForm: FormGroup;
   paymentForm: FormGroup;
   loading = false;
   availabilityChecked = false;
@@ -46,8 +54,9 @@ export class BookingWizard implements OnInit {
   nights = 0;
   totalPrice = 0;
   minDate = new Date();
-
+  capacityError = '';
   hasAcsiCard = false;
+  hasAnimals = false;
   acsiChecked = false;
   acsiEligible = false;
   acsiPrice = 0;
@@ -75,6 +84,19 @@ export class BookingWizard implements OnInit {
       phone: ['', Validators.required]
     });
 
+    this.vehicleForm = this.fb.group({
+      vehicleType: ['', Validators.required],
+      licensePlate: ['', Validators.required]
+    });
+
+    this.animalForm = this.fb.group({
+      pets: [0],
+      animalType: [''],
+      animalBreed: [''],
+      animalTattooed: [false],
+      animalVaccinated: [false]
+    });
+
     this.paymentForm = this.fb.group({
       cardNumber: ['', [Validators.required, Validators.pattern(/^\d{16}$/)]],
       cardName: ['', Validators.required],
@@ -88,6 +110,7 @@ export class BookingWizard implements OnInit {
     this.publicService.getAccommodation(id).subscribe({
       next: data => {
         this.accommodation = data;
+        this.accommodationCapacity = data.capacity;
         this.cdr.detectChanges();
       }
     });
@@ -96,6 +119,7 @@ export class BookingWizard implements OnInit {
       this.calculatePrice();
       this.availabilityChecked = false;
       this.acsiChecked = false;
+      this.checkCapacity();
       this.cdr.detectChanges();
     });
   }
@@ -110,8 +134,18 @@ export class BookingWizard implements OnInit {
     }
   }
 
+  checkCapacity(): void {
+    const { adults, children } = this.datesForm.value;
+    const total = (adults || 0) + (children || 0);
+    if (this.accommodationCapacity > 0 && total > this.accommodationCapacity) {
+      this.capacityError = `Le nombre de personnes (${total}) dépasse la capacité maximale (${this.accommodationCapacity} personnes)`;
+    } else {
+      this.capacityError = '';
+    }
+  }
+
   checkAvailability(): void {
-    if (this.datesForm.invalid || !this.accommodation) return;
+    if (this.datesForm.invalid || !this.accommodation || this.capacityError) return;
     this.loading = true;
 
     const { startDate, endDate } = this.datesForm.value;
@@ -122,7 +156,6 @@ export class BookingWizard implements OnInit {
       next: result => {
         this.isAvailable = result.available;
         this.availabilityChecked = true;
-
         if (this.isAvailable && this.hasAcsiCard) {
           this.checkAcsi(start, end);
         } else {
@@ -168,7 +201,14 @@ export class BookingWizard implements OnInit {
       adults: this.datesForm.value.adults,
       children: this.datesForm.value.children,
       hasAcsiCard: this.hasAcsiCard,
-      ...this.personalForm.value
+      ...this.personalForm.value,
+      pets: this.hasAnimals ? (this.animalForm.value.pets || 1) : 0,
+      animalType: this.hasAnimals ? this.animalForm.value.animalType : null,
+      animalBreed: this.hasAnimals ? this.animalForm.value.animalBreed : null,
+      animalTattooed: this.hasAnimals ? this.animalForm.value.animalTattooed : false,
+      animalVaccinated: this.hasAnimals ? this.animalForm.value.animalVaccinated : false,
+      vehicleType: this.vehicleForm.value.vehicleType,
+      licensePlate: this.vehicleForm.value.licensePlate
     };
 
     this.publicService.createBooking(request).subscribe({

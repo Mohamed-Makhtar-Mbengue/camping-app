@@ -91,9 +91,23 @@ public class PdfService {
         addRow(vehicleTable, "Type de véhicule", booking.getVehicleType() != null ? booking.getVehicleType() : "—");
         addRow(vehicleTable, "Plaque d'immatriculation", booking.getLicensePlate() != null ? booking.getLicensePlate() : "—");
         addRow(vehicleTable, "2ème véhicule", booking.getSecondVehicle() != null ? booking.getSecondVehicle() : "—");
-        addRow(vehicleTable, "Animaux", booking.getPets() != null && booking.getPets() > 0 ? booking.getPets() + " animal(aux)" : "Aucun");
         document.add(vehicleTable);
         document.add(new Paragraph("\n"));
+
+        // Section animaux
+        document.add(new Paragraph("ANIMAUX").setBold().setFontSize(13).setFontColor(PRIMARY_COLOR));
+        document.add(createLine());
+
+        Table animalTable = new Table(UnitValue.createPercentArray(new float[]{40, 60})).useAllAvailableWidth();
+        boolean hasAnimal = booking.getPets() != null && booking.getPets() > 0;
+        addRow(animalTable, "Animal(aux)", hasAnimal ? booking.getPets() + " animal(aux)" : "Aucun");
+        if (hasAnimal) {
+            addRow(animalTable, "Type d'animal", booking.getAnimalType() != null ? booking.getAnimalType() : "—");
+            addRow(animalTable, "Race", booking.getAnimalBreed() != null ? booking.getAnimalBreed() : "—");
+            addRow(animalTable, "Tatoué", Boolean.TRUE.equals(booking.getAnimalTattooed()) ? "✓ Oui" : "✗ Non");
+            addRow(animalTable, "Vacciné", Boolean.TRUE.equals(booking.getAnimalVaccinated()) ? "✓ Oui" : "✗ Non");
+        }
+        document.add(animalTable);
 
         // Prix
         document.add(new Paragraph("TARIFICATION").setBold().setFontSize(13).setFontColor(PRIMARY_COLOR));

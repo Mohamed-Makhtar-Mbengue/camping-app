@@ -9,18 +9,18 @@ html, body {
   font-family: 'Roboto', sans-serif;
 }
 
-// Mode clair (défaut)
 body {
   background: linear-gradient(135deg, #f0f4ff 0%, #e8ecf8 50%, #f5f0ff 100%);
   min-height: 100vh;
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-// Mode sombre
+// ============ MODE SOMBRE ============
 body.dark-mode {
-  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
-  color: #e0e0e0;
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%) !important;
+  color: #e0e0e0 !important;
 
+  // Cards
   .mat-mdc-card {
     background-color: #1e1e2e !important;
     color: #e0e0e0 !important;
@@ -28,8 +28,235 @@ body.dark-mode {
 
   .mat-mdc-card-title { color: #ffffff !important; }
   .mat-mdc-card-subtitle { color: #aaaaaa !important; }
-  .mat-toolbar { background: #12121f !important; }
 
-  h1, h2, h3 { color: #ffffff !important; }
+  // Toolbar/Navbar
+  .mat-toolbar {
+    background: #12121f !important;
+    color: #e0e0e0 !important;
+  }
+
+  // Tabs
+  .mat-mdc-tab-group,
+  .mat-mdc-tab-header {
+    background-color: #1e1e2e !important;
+  }
+
+  .mat-mdc-tab-body-wrapper {
+    background-color: #1e1e2e !important;
+  }
+
+  // Textes
+  h1, h2, h3, h4 { color: #ffffff !important; }
   p, span, label { color: #cccccc !important; }
+
+  // Conteneurs principaux
+  .dashboard-container,
+  .checkinout-container,
+  .calendar-container,
+  .bookings-container,
+  .accommodations-container,
+  .client-container {
+    background: transparent !important;
+  }
+
+  // KPI cards dark
+  .kpi-card {
+    background-color: #1e1e2e !important;
+    .kpi-label { color: #aaa !important; }
+  }
+
+  // Summary cards dark
+  .summary-card {
+    background-color: #1e1e2e !important;
+    .label { color: #aaa !important; }
+  }
+
+  // Booking rows dark
+  .booking-row {
+    background-color: #252535 !important;
+    .client-info span,
+    .stay-info span,
+    .persons-info span { color: #ccc !important; }
+  }
+
+  // Calendar dark
+  .calendar-card {
+    background-color: #1e1e2e !important;
+  }
+
+  .calendar-day {
+    background: #252535 !important;
+    color: #e0e0e0 !important;
+
+    &:hover:not(.other-month) {
+      background: #2a2a45 !important;
+    }
+
+    &.today {
+      background: #2a2a45 !important;
+      border-color: #667eea !important;
+    }
+
+    &.selected {
+      background: #1a1a40 !important;
+    }
+
+    &.low { background: #2a2a1a !important; }
+    &.medium { background: #2a1a0a !important; }
+    &.high { background: #2a0a0a !important; }
+
+    &.other-month { opacity: 0.2 !important; }
+  }
+
+  .day-name { color: #aaa !important; }
+
+  // Bar chart dark
+  .bar-value { color: #ccc !important; }
+  .bar-label { color: #ccc !important; }
+  .bar-bookings { color: #888 !important; }
+
+  // Form fields dark
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      background-color: #252535 !important;
+    }
+    input { color: #e0e0e0 !important; }
+    label { color: #aaa !important; }
+  }
+
+  // Chip dark
+  .mat-mdc-chip {
+    background-color: #333355 !important;
+    color: #e0e0e0 !important;
+  }
+
+  // Table/List items
+  .accommodation-card,
+  .booking-card,
+  .action-card {
+    background-color: #1e1e2e !important;
+    &:hover { background-color: #252540 !important; }
+  }
+
+  // Metric cards
+  .metric-card {
+    background-color: #1e1e2e !important;
+    .occupancy-inner { background: #1e1e2e !important; }
+    .revenue-label { color: #aaa !important; }
+  }
+
+  // Chart card
+  .chart-card { background-color: #1e1e2e !important; }
+
+  // Day detail panel
+  .day-detail {
+    background-color: #1e1e2e !important;
+    .booking-item {
+      &.checkin-item { background: #0a2a0a !important; }
+      &.checkout-item { background: #2a0a0a !important; }
+      &.occupied-item { background: #0a0a2a !important; }
+    }
+  }
+
+  // Empty states
+  .empty, .empty-state, .empty-detail {
+    color: #666 !important;
+  }
+
+  // Quick action cards
+  .action-card {
+    mat-icon { color: #667eea !important; }
+    span { color: #ccc !important; }
+  }
+
+  // Section titles dans checkinout
+  .section-title {
+    &.checkin-title { color: #81c784 !important; }
+    &.checkout-title { color: #e57373 !important; }
+    &.occupied-title { color: #90caf9 !important; }
+  }
+
+  // Deposit info
+  .deposit-info {
+    &.deposit-pending { color: #ffb74d !important; }
+    &.deposit-held { color: #81c784 !important; }
+  }
+
+  // Summary cards dans checkinout
+  .arrivals { border-color: #81c784 !important; }
+  .departures { border-color: #e57373 !important; }
+  .present { border-color: #90caf9 !important; }
+
+  // Snackbar
+  .mat-mdc-snack-bar-container { background-color: #333 !important; }
+
+  // Dialog
+  .mat-mdc-dialog-container { background-color: #1e1e2e !important; }
+  .mat-mdc-dialog-surface { background-color: #1e1e2e !important; }
+
+  // Select/Menu
+  .mat-mdc-select-panel,
+  .mat-mdc-menu-panel {
+    background-color: #252535 !important;
+    .mat-mdc-option { color: #e0e0e0 !important; }
+  }
+
+  // Paginator
+  .mat-mdc-paginator {
+    background-color: #1e1e2e !important;
+    color: #e0e0e0 !important;
+  }
+
+  // Stepper
+  .mat-stepper-horizontal,
+  .mat-stepper-vertical {
+    background-color: #1e1e2e !important;
+  }
+
+  // Input outline
+  .mat-mdc-outlined-field .mdc-notched-outline__leading,
+  .mat-mdc-outlined-field .mdc-notched-outline__notch,
+  .mat-mdc-outlined-field .mdc-notched-outline__trailing {
+    border-color: #444 !important;
+  }
+
+  // Public navbar dark
+  .public-navbar {
+    background: #12121f !important;
+    .logo { color: #667eea !important; }
+    a { color: #e0e0e0 !important; }
+    .lang-btn { color: #e0e0e0 !important; }
+  }
+
+  // Hero section reste intact (gradient propre)
+  .hero { background: inherit; }
+
+  // Accommodations section
+  .accommodations-section {
+    background: #12121f !important;
+    h2 { color: #ffffff !important; }
+    .subtitle { color: #aaa !important; }
+  }
+
+  // Footer
+  .footer { background: #0a0a15 !important; }
+
+  // Welcome card dans client dashboard
+  .welcome-card {
+    background: linear-gradient(135deg, #1a2a4a, #2a1a4a) !important;
+    .welcome-text {
+      h1 { color: #fff !important; }
+      p { color: #aaa !important; }
+    }
+  }
+
+  // Confirmation page
+  .confirmation-card { background-color: #1e1e2e !important; }
+  .info-box { background: #2a1a0a !important; }
+
+  // Login pages
+  .login-card, .register-card {
+    background-color: #1e1e2e !important;
+    .links p { color: #aaa !important; }
+  }
 }
