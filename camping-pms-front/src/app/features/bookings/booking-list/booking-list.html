@@ -80,47 +80,49 @@
           </mat-card-content>
 
           <mat-card-actions>
-            @if (authService.isAdmin() && booking.status === 'PENDING') {
-              <button mat-raised-button color="primary"
-                      (click)="openAssignmentDialog(booking)">
-                <mat-icon>assignment</mat-icon> Assigner & Confirmer
-              </button>
-              <button mat-stroked-button color="warn"
-                      (click)="updateStatus(booking.id, 'CANCELLED')">
-                <mat-icon>close</mat-icon> Annuler
-              </button>
-            }
+            <div class="actions-row">
+              @if (authService.isAdmin() && booking.status === 'PENDING') {
+                <button mat-raised-button color="primary"
+                        (click)="openAssignmentDialog(booking)">
+                  <mat-icon>assignment</mat-icon> Assigner & Confirmer
+                </button>
+                <button mat-stroked-button color="warn"
+                        (click)="updateStatus(booking.id, 'CANCELLED')">
+                  <mat-icon>close</mat-icon> Annuler
+                </button>
+              }
 
-            @if (booking.status === 'CONFIRMED') {
-              <span class="confirmed-badge">✅ Confirmée</span>
-            }
+              @if (booking.status === 'CONFIRMED') {
+                <span class="confirmed-badge">✅ Confirmée</span>
+              }
 
-            @if (booking.status !== 'CONFIRMED') {
-              <button mat-icon-button color="warn"
-                      (click)="delete(booking.id)"
-                      title="Supprimer">
-                <mat-icon>delete</mat-icon>
-              </button>
-            }
+              @if (authService.isAdmin() && booking.status === 'CONFIRMED'
+                  && booking.depositStatus === 'PENDING') {
+                <button mat-stroked-button color="accent"
+                        (click)="holdDeposit(booking.id)">
+                  <mat-icon>lock</mat-icon> Caution
+                </button>
+              }
 
-            @if (authService.isAdmin() && booking.status === 'CONFIRMED'
-                && booking.depositStatus === 'PENDING') {
-              <button mat-stroked-button color="accent"
-                      (click)="holdDeposit(booking.id)">
-                <mat-icon>lock</mat-icon> Caution
-              </button>
-            }
+              @if (authService.isAdmin() && booking.depositStatus === 'HELD') {
+                <button mat-stroked-button color="primary"
+                        (click)="returnDeposit(booking.id)">
+                  <mat-icon>check</mat-icon> Rembourser
+                </button>
+                <button mat-stroked-button color="warn"
+                        (click)="partialRetainDeposit(booking.id)">
+                  <mat-icon>remove_circle</mat-icon> Retenue
+                </button>
+              }
 
-            @if (authService.isAdmin() && booking.depositStatus === 'HELD') {
-              <button mat-stroked-button color="primary"
-                      (click)="returnDeposit(booking.id)">
-                <mat-icon>check</mat-icon> Rembourser
-              </button>
-              <button mat-stroked-button color="warn"
-                      (click)="partialRetainDeposit(booking.id)">
-                <mat-icon>remove_circle</mat-icon> Retenue
-              </button>
-            }
+              @if (booking.status !== 'CONFIRMED') {
+                <button mat-icon-button color="warn"
+                        (click)="delete(booking.id)"
+                        title="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            </div>
           </mat-card-actions>
         </mat-card>
       }
